@@ -23,7 +23,8 @@ namespace Network_Packet_Traffic.SocketViaAdmin
     /// <summary>
     /// Delegate for the event when a packet is received.
     /// </summary>
-    public delegate EventHandler<EventArgs> OnPacketReceived(object sender, IPHeader ipHeader);
+    public delegate void OnPacketReceivedEventHandler(object sender, IPHeader ipHeader);
+
 
     /// <summary>
     /// Monitors socket activity and captures incoming packets.
@@ -33,7 +34,7 @@ namespace Network_Packet_Traffic.SocketViaAdmin
         private Socket socket;
         private bool isListening = false;
 
-        public event OnPacketReceived PacketReceived; // Event triggered on packet receipt
+        public event OnPacketReceivedEventHandler PacketReceived; // Event triggered on packet receipt
 
         public SocketMonitor()
         {
@@ -60,18 +61,43 @@ namespace Network_Packet_Traffic.SocketViaAdmin
             byte[] receiveAll = new byte[] { 1, 0, 0, 0 };
             byte[] outputBuffer = new byte[] { 0, 0, 0, 0 };
             socket.IOControl(IOControlCode.ReceiveAll, receiveAll, outputBuffer); // SIO_RCVALL
+
         }
 
+        /// <summary>
+        /// Gets whether the monitor is currently listening for packets.
+        /// </summary>
         public bool IsListening { get { return isListening; } }
 
         private List<IPHeader> ipHeaderList = new List<IPHeader>();
 
+        /// <summary>
+        /// Gets the list of IP headers received.
+        /// </summary>
         public IPHeader[] IPHeaders
         {
             get
             {
                 return ipHeaderList.ToArray();
             }
+        }
+
+        static void Main(string[] args)
+        {
+            var socketMonitor = new SocketMonitor();
+            socketMonitor.PacketReceived += (sender, ipHeader) =>
+              {
+                  Console.WriteLine($"Source IP: {ipHeader.IPSourceAddress}");
+                  Console.WriteLine($"Destination IP: {ipHeader.IPDestinationAddress}");
+                  Console.WriteLine($"Protocol: {ipHeader.Protocol}");
+                  Console.WriteLine($"Source Port: {ipHeader.SourcePort}");
+                  Console.WriteLine($"Destination Port: {ipHeader.DestinationPort}");
+                  Console.WriteLine("_________________________");
+              };
+
+            socketMonitor.StartListen();
+            Console.ReadLine();
+            socketMonitor.StopListen();
         }
 
         /// <summary>
@@ -115,6 +141,8 @@ namespace Network_Packet_Traffic.SocketViaAdmin
                 Console.WriteLine("Already listening.");
             }
         }
+
+
 
         /// <summary>
         /// Stops listening for incoming packets.
