@@ -4,34 +4,44 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using static Network_Packet_Traffic.SocketViaAdmin.Socket_Monitor;
+using static Network_Packet_Traffic.SocketViaAdmin.SocketMonitor;
 
 namespace Network_Packet_Traffic.SocketViaAdmin
 {
+    /// <summary>
+    /// Structure representing the IP header of a packet.
+    /// </summary>
     public struct IPHeader
     {
-        public string IPSourceAddress;
-        public string IPDestinationAddress;
-        public Protocol Protocol;
-        public int SourcePort;
-        public int DestinationPort;
-
+        public string IPSourceAddress; // Source IP Address
+        public string IPDestinationAddress; // Destination IP Address
+        public Protocol Protocol; // Protocol used
+        public int SourcePort; // Source Port
+        public int DestinationPort; // Destination Port
     }
 
-    public delegate EventHandler<EventArgs> OnPacketReceived(object obj, IPHeader iPHeader);
+    /// <summary>
+    /// Delegate for the event when a packet is received.
+    /// </summary>
+    public delegate EventHandler<EventArgs> OnPacketReceived(object sender, IPHeader ipHeader);
 
-    public class Socket_Monitor
+    /// <summary>
+    /// Monitors socket activity and captures incoming packets.
+    /// </summary>
+    public class SocketMonitor
     {
-        Socket socket;
+        private Socket socket;
         private bool isListening = false;
 
-        public event OnPacketReceived PacketReceived;
+        public event OnPacketReceived PacketReceived; // Event triggered on packet receipt
 
-        public Socket_Monitor()
+        public SocketMonitor()
         {
+            // Get host entry and determine local IP addresses
+            var hostEntry = Dns.GetHostEntry(Dns.GetHostName());
+            var localAddresses = hostEntry.AddressList.Where((h) => h.AddressFamily == AddressFamily.InterNetwork).ToList();
 
-            var he = Dns.GetHostEntry(Dns.GetHostName());
-            var addr = he.AddressList.Where((h) => h.AddressFamily == AddressFamily.InterNetwork).ToList();
+            // Initialize the socket for raw IP packets
             try
             {
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
@@ -41,19 +51,20 @@ namespace Network_Packet_Traffic.SocketViaAdmin
                 Console.Write("You need Administrator user privileges to execute this program.");
                 return;
             }
+
             isListening = false;
-            socket.Bind(new IPEndPoint(addr[0], 0));
+            socket.Bind(new IPEndPoint(localAddresses[0], 0)); // Bind socket to local address
             socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AcceptConnection, 1);
 
-            byte[] ib = new byte[] { 1, 0, 0, 0 };
-            byte[] ob = new byte[] { 0, 0, 0, 0 };
-            socket.IOControl(IOControlCode.ReceiveAll, ib, ob);//SIO_RCVALL
-
+            // Set socket to receive all packets
+            byte[] receiveAll = new byte[] { 1, 0, 0, 0 };
+            byte[] outputBuffer = new byte[] { 0, 0, 0, 0 };
+            socket.IOControl(IOControlCode.ReceiveAll, receiveAll, outputBuffer); // SIO_RCVALL
         }
 
         public bool IsListening { get { return isListening; } }
 
-        List<IPHeader> ipHeaderList = new List<IPHeader>();
+        private List<IPHeader> ipHeaderList = new List<IPHeader>();
 
         public IPHeader[] IPHeaders
         {
@@ -63,6 +74,9 @@ namespace Network_Packet_Traffic.SocketViaAdmin
             }
         }
 
+        /// <summary>
+        /// Starts listening for incoming packets.
+        /// </summary>
         public void StartListen()
         {
             if (!isListening)
@@ -71,25 +85,28 @@ namespace Network_Packet_Traffic.SocketViaAdmin
                 ipHeaderList = new List<IPHeader>();
                 Task.Run(() =>
                 {
-                    byte[] buf = new byte[4096];
+                    byte[] buffer = new byte[4096];
                     while (isListening)
                     {
-                        IAsyncResult iares = socket.BeginReceive(buf, 0, buf.Length, SocketFlags.None, null, null);
-                        var len = socket.EndReceive(iares);
-                        var sourcePort = (buf[20] << 8) + buf[21];
-                        var destinationPort = (buf[22] << 8) + buf[23];
-                        int m_HeaderLength = (buf[0] & 0x0F) * 4 /* sizeof(int) */;
-                        var sourcePort1 = buf[m_HeaderLength] * 256 + buf[m_HeaderLength + 1];
-                        var destinationPort1 = buf[m_HeaderLength + 2] * 256 + buf[m_HeaderLength + 3];
-                        IPHeader iPHeader = new IPHeader();
-                        iPHeader.IPSourceAddress = Ip(buf, 12);
-                        iPHeader.IPDestinationAddress = Ip(buf, 16);
-                        iPHeader.Protocol = (Protocol)buf[9];
-                        iPHeader.SourcePort = sourcePort1;
-                        iPHeader.DestinationPort = destinationPort1;
-                        ipHeaderList.Add(iPHeader);
-                        PacketReceived.Invoke(this, iPHeader);
+                        IAsyncResult asyncResult = socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, null, null);
+                        var length = socket.EndReceive(asyncResult);
+                        var sourcePort = (buffer[20] << 8) + buffer[21];
+                        var destinationPort = (buffer[22] << 8) + buffer[23];
+                        int headerLength = (buffer[0] & 0x0F) * 4; // Header length in bytes
+                        var sourcePort1 = buffer[headerLength] * 256 + buffer[headerLength + 1];
+                        var destinationPort1 = buffer[headerLength + 2] * 256 + buffer[headerLength + 3];
 
+                        IPHeader ipHeader = new IPHeader
+                        {
+                            IPSourceAddress = ConvertToIp(buffer, 12),
+                            IPDestinationAddress = ConvertToIp(buffer, 16),
+                            Protocol = (Protocol)buffer[9],
+                            SourcePort = sourcePort1,
+                            DestinationPort = destinationPort1
+                        };
+
+                        ipHeaderList.Add(ipHeader);
+                        PacketReceived?.Invoke(this, ipHeader); // Invoke the event if there are subscribers
                     }
                 });
             }
@@ -99,12 +116,15 @@ namespace Network_Packet_Traffic.SocketViaAdmin
             }
         }
 
+        /// <summary>
+        /// Stops listening for incoming packets.
+        /// </summary>
         public void StopListen()
         {
             if (isListening)
             {
                 isListening = false;
-                ipHeaderList.Clear();
+                ipHeaderList.Clear(); // Clear the list of headers
                 Console.WriteLine("Listening stopped.");
             }
             else
@@ -113,73 +133,32 @@ namespace Network_Packet_Traffic.SocketViaAdmin
             }
         }
 
-        private string Ip(byte[] buf, int i)
+        /// <summary>
+        /// Converts byte array to string representation of an IP address.
+        /// </summary>
+        /// <param name="buffer">The byte array containing IP address data.</param>
+        /// <param name="index">The starting index of the IP address in the byte array.</param>
+        /// <returns>A string representation of the IP address.</returns>
+        private string ConvertToIp(byte[] buffer, int index)
         {
-            return string.Format("{0}.{1}.{2}.{3}", buf[i], buf[i + 1], buf[i + 2], buf[i + 3]);
+            return string.Format("{0}.{1}.{2}.{3}", buffer[index], buffer[index + 1], buffer[index + 2], buffer[index + 3]);
         }
 
-        private string Proto_V1(byte b)
+        /// <summary>
+        /// Gets the protocol name based on the provided byte.
+        /// </summary>
+        /// <param name="protocolByte">The byte representing the protocol.</param>
+        /// <returns>A string representation of the protocol.</returns>
+        private string GetProtocolName(byte protocolByte)
         {
-            switch (b)
-            {
-                case 1:
-                    return "ICMP";
-                case 2:
-                    return "IGMP";
-                case 3:
-                    return "IPv6-ICMP"; // Adding a new protocol
-                case 4:
-                    return "IP";
-                case 6:
-                    return "TCP";
-                case 17:
-                    return "UDP";
-                case 41:
-                    return "IPv6";
-                case 47:
-                    return "GRE";
-                case 50:
-                    return "ESP";
-                case 51:
-                    return "AH";
-                case 58:
-                    return "IPv6-ICMP";
-                case 80:
-                    return "HTTP"; // Adding a new protocol
-                case 88:
-                    return "EIGRP";
-                case 89:
-                    return "OSP";
-                case 112:
-                    return "VRRP";
-                case 115:
-                    return "L2TP";
-                case 121:
-                    return "SCTP";
-                case 132:
-                    return "SCTP";
-                case 135:
-                    return "Mobility Header for IPv6";
-                case 136:
-                    return "ICMP for IPv6";
-                case 137:
-                    return "No Next Header for IPv6";
-                case 138:
-                    return "Destination Options for IPv6";
-                case 139:
-                    return "ICMP for IPv6";
-                default:
-                    return "Other";
-            }
-        }
-
-        private string Proto_V2(byte b)
-        {
-            return Enum.GetName(typeof(Protocol), b);
+            return Enum.GetName(typeof(Protocol), protocolByte) ?? "Unknown";
         }
 
         #region Protocol
 
+        /// <summary>
+        /// Enum representing various protocols.
+        /// </summary>
         public enum Protocol
         {
             HOPOPT = 0,
@@ -229,7 +208,7 @@ namespace Network_Packet_Traffic.SocketViaAdmin
             IPv6_Frag = 44,
             IDRP = 45,
             RSVP = 46,
-            GREs = 47,
+            GRE = 47,
             DSR = 48,
             BNA = 49,
             ESP = 50,
@@ -321,7 +300,7 @@ namespace Network_Packet_Traffic.SocketViaAdmin
             Mobility_Header = 135,
             UDPLite = 136,
             MPLS_in_IP = 137,
-            manet = 138,
+            MANET = 138,
             HIP = 139,
             Shim6 = 140,
             WESP = 141,
@@ -330,6 +309,5 @@ namespace Network_Packet_Traffic.SocketViaAdmin
         }
 
         #endregion
-
     }
 }

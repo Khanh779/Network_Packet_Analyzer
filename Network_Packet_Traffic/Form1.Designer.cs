@@ -58,7 +58,8 @@ namespace Network_Packet_Traffic
             this.columnHeader4,
             this.columnHeader5,
             this.columnHeader6});
-            this.listView1.HideSelection = false;
+            this.listView1.FullRowSelect = true;
+            this.listView1.GridLines = true;
             this.listView1.Location = new System.Drawing.Point(20, 60);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(703, 349);
