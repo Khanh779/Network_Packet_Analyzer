@@ -62,6 +62,11 @@ namespace Network_Packet_Traffic.Connections
         public bool IsAutoReload { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets the interval for auto-reloading.
+        /// </summary>
+        public int Interval { get; set; } = 5000;
+
+        /// <summary>
         /// Starts listening for new packet connections.
         /// </summary>
         public void StartListening()
@@ -190,7 +195,7 @@ namespace Network_Packet_Traffic.Connections
                     }
                 }
 
-                Thread.Sleep(5000);
+                Thread.Sleep(Interval);
                 _previousPackets = packetConnectionInfos;
             }
             while (IsAutoReload);
