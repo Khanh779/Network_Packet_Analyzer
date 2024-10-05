@@ -71,7 +71,7 @@
     <Compile Include="Connections\Enums\MIB_IPNET_TYPE.cs" />
     <Compile Include="Connections\Enums\ProtocolType.cs" />
     <Compile Include="Connections\Enums\StateType.cs" />
-    <Compile Include="Connections\Struct\PacketConnectionInfo.cs" />
+    <Compile Include="Connections\Structs\PacketConnectionInfo.cs" />
     <Compile Include="Connections\TCP\MIB_TCPROW_OWNER_PID.cs" />
     <Compile Include="Connections\TCP\MIB_TCPSTATS.cs" />
     <Compile Include="Connections\TCP\MIB_TCPTABLE_OWNER_PID.cs" />

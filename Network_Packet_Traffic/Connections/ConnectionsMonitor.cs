@@ -1,151 +1,201 @@
 ﻿using Network_Packet_Traffic.Connections.ARP;
 using Network_Packet_Traffic.Connections.Enums;
 using Network_Packet_Traffic.Connections.IPNET;
-using Network_Packet_Traffic.Connections.Struct;
+using Network_Packet_Traffic.Connections.Structs;
 using Network_Packet_Traffic.Connections.TCP;
 using Network_Packet_Traffic.Connections.UDP;
 using System.Linq;
 using System.Threading;
 using static Network_Packet_Traffic.Connections.NetHelper;
+
 namespace Network_Packet_Traffic.Connections
 {
-    public delegate void OnNewPacketsConnectionLoad(object ob, PacketConnectionInfo[] packet); // Liệt kê tất cả các gói
-    public delegate void OnNewPacketConnectionStarted(object ob, PacketConnectionInfo packet); // Liệt kê các gói mới đã bắt đầu kết nối
-    public delegate void OnNewPacketConnectionEnded(object ob, PacketConnectionInfo packet); // Liệt kê các gói mới đã kết thúc kết nối
+    /// <summary>
+    /// Delegate for handling the event when a new packet connection load occurs.
+    /// </summary>
+    public delegate void NewPacketsConnectionLoadHandler(object sender, PacketConnectionInfo[] packets);
+
+    /// <summary>
+    /// Delegate for handling the event when a new packet connection starts.
+    /// </summary>
+    public delegate void NewPacketConnectionStartedHandler(object sender, PacketConnectionInfo packet);
+
+    /// <summary>
+    /// Delegate for handling the event when a packet connection ends.
+    /// </summary>
+    public delegate void NewPacketConnectionEndedHandler(object sender, PacketConnectionInfo packet);
 
     public class ConnectionsMonitor
     {
-        public event OnNewPacketConnectionStarted OnNewPacketConnectionStarted;
-        public event OnNewPacketsConnectionLoad OnNewPacketsConnectionLoad;
-        public event OnNewPacketConnectionEnded OnNewPacketConnectionEnded;
-        PacketConnectionInfo[] _oldPackets = new PacketConnectionInfo[0];
-        Thread task = null;
+        /// <summary>
+        /// Event triggered when a new packet connection starts.
+        /// </summary>
+        public event NewPacketConnectionStartedHandler NewPacketConnectionStarted;
 
+        /// <summary>
+        /// Event triggered when new packet connections are loaded.
+        /// </summary>
+        public event NewPacketsConnectionLoadHandler NewPacketsConnectionLoad;
+
+        /// <summary>
+        /// Event triggered when a packet connection ends.
+        /// </summary>
+        public event NewPacketConnectionEndedHandler NewPacketConnectionEnded;
+
+        private PacketConnectionInfo[] _previousPackets = new PacketConnectionInfo[0];
+        private Thread _monitorThread = null;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConnectionsMonitor"/> class.
+        /// </summary>
+        /// <param name="autoReload">Indicates whether the monitor should auto-reload periodically.</param>
         public ConnectionsMonitor(bool autoReload = true)
         {
-            task = new Thread(GetAllPacket);
+            _monitorThread = new Thread(MonitorPacketConnections);
             IsAutoReload = autoReload;
-            task.IsBackground = true;
+            _monitorThread.IsBackground = true;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the monitor should auto-reload.
+        /// </summary>
         public bool IsAutoReload { get; set; } = true;
 
-        public void StartListen()
+        /// <summary>
+        /// Starts listening for new packet connections.
+        /// </summary>
+        public void StartListening()
         {
-            // Gọi các phương thức để lấy thông tin và xử lý nó ở đây
-            if (task != null && task.ThreadState != ThreadState.Running)
-                task.Start();
+            if (_monitorThread != null && _monitorThread.ThreadState != ThreadState.Running)
+                _monitorThread.Start();
         }
 
-        public bool IsRunning => task.ThreadState == ThreadState.Running;
+        /// <summary>
+        /// Gets a value indicating whether the monitor is currently running.
+        /// </summary>
+        public bool IsRunning => _monitorThread.ThreadState == ThreadState.Running;
 
-        public void StopListen()
+        /// <summary>
+        /// Stops listening for new packet connections.
+        /// </summary>
+        public void StopListening()
         {
-            // Đối với các tác vụ dừng lắng nghe, bạn có thể thực hiện các bước tương ứng ở đây
-            if (task.ThreadState == ThreadState.Running)
-                task.Abort();
+            if (_monitorThread.ThreadState == ThreadState.Running)
+                _monitorThread.Abort();
         }
 
-        #region Connection Table
+        #region Connection Monitoring
 
-        void GetAllPacket()
+        /// <summary>
+        /// Monitors all packet connections by fetching the TCP, UDP, IPNET, and ARP tables.
+        /// </summary>
+        private void MonitorPacketConnections()
         {
             do
             {
                 MIB_TCPTABLE_OWNER_PID tcpTable = TCP.TCP_Info.GetTcpTable();
                 MIB_UDPTABLE_OWNER_PID udpTable = UDP.UDP_Info.GetUdpTable();
-                MIB_IPNETTABLE mIB_IPNETTABLE = IPNET.IPNET_Info.GetIpNetable();
+                MIB_IPNETTABLE ipNetTable = IPNET.IPNET_Info.GetIpNetable();
                 var arpTable = ARP.ARP_Info.GetARPTable();
 
+                // Combine all packet connection information from TCP, UDP, IPNET, and ARP tables
+                PacketConnectionInfo[] packetConnectionInfos = new PacketConnectionInfo[tcpTable.dwNumEntries + udpTable.dwNumEntries + ipNetTable.dwNumEntries + arpTable.NumberOfEntries];
 
-                PacketConnectionInfo[] packetConnectionInfos = new PacketConnectionInfo[tcpTable.dwNumEntries + udpTable.dwNumEntries + mIB_IPNETTABLE.dwNumEntries + arpTable.NumberOfEntries];
+                // Populate TCP connection data
                 for (int i = 0; i < tcpTable.dwNumEntries; i++)
                 {
                     MIB_TCPROW_OWNER_PID tcpRow = tcpTable.table[i];
-                    PacketConnectionInfo packet = new PacketConnectionInfo();
-                    packet.LocalAddress = ConvertIpAddress((int)tcpRow.dwLocalAddr).ToString();
-                    packet.LocalPort = tcpRow.dwLocalPort;
-                    packet.RemoteAddress = ConvertIpAddress((int)tcpRow.dwRemoteAddr).ToString();
-                    packet.RemotePort = tcpRow.dwRemotePort;
-                    packet.ProcessId = tcpRow.dwOwningPid;
-                    packet.Protocol = ProtocolType.TCP;
-                    packet.State = (GetState((int)tcpRow.dwState)).ToString();
+                    PacketConnectionInfo packet = new PacketConnectionInfo
+                    {
+                        LocalAddress = ConvertIpAddress((int)tcpRow.dwLocalAddr).ToString(),
+                        LocalPort = tcpRow.dwLocalPort,
+                        RemoteAddress = ConvertIpAddress((int)tcpRow.dwRemoteAddr).ToString(),
+                        RemotePort = tcpRow.dwRemotePort,
+                        ProcessId = tcpRow.dwOwningPid,
+                        Protocol = ProtocolType.TCP,
+                        State = GetState((int)tcpRow.dwState)
+                    };
                     packetConnectionInfos[i] = packet;
                 }
 
-
+                // Populate UDP connection data
                 for (int i = 0; i < udpTable.dwNumEntries; i++)
                 {
                     MIB_UDPROW_OWNER_PID udpRow = udpTable.table[i];
-                    PacketConnectionInfo packet = new PacketConnectionInfo();
-                    packet.LocalAddress = ConvertIpAddress((int)udpRow.dwLocalAddr).ToString();
-                    packet.LocalPort = udpRow.dwLocalPort;
-                    packet.RemoteAddress = ConvertIpAddress((int)udpRow.dwRemoteAddr).ToString();
-                    packet.RemotePort = udpRow.dwRemotePort;
-                    packet.State = GetState(12).ToString();
-                    packet.ProcessId = udpRow.dwOwningPid;
-                    packet.Protocol = ProtocolType.UDP;
+                    PacketConnectionInfo packet = new PacketConnectionInfo
+                    {
+                        LocalAddress = ConvertIpAddress((int)udpRow.dwLocalAddr).ToString(),
+                        LocalPort = udpRow.dwLocalPort,
+                        RemoteAddress = ConvertIpAddress((int)udpRow.dwRemoteAddr).ToString(),
+                        RemotePort = udpRow.dwRemotePort,
+                        State = GetState(-1),
+                        ProcessId = udpRow.dwOwningPid,
+                        Protocol = ProtocolType.UDP
+                    };
                     packetConnectionInfos[i + tcpTable.dwNumEntries] = packet;
-
                 }
 
-                for (int i = 0; i < mIB_IPNETTABLE.dwNumEntries; i++)
+                // Populate IPNET (ARP-like) connection data
+                for (int i = 0; i < ipNetTable.dwNumEntries; i++)
                 {
-                    MIB_IPNETROW arpRow = mIB_IPNETTABLE.table[i];
-                    PacketConnectionInfo packet = new PacketConnectionInfo();
-                    packet.LocalAddress = ConvertIpAddress(arpRow.dwAddr).ToString();
-                    packet.LocalPort = 0;
-                    packet.RemoteAddress = ConvertIpAddress(arpRow.dwPhysAddrLen).ToString();
-                    packet.RemotePort = 0;
-                    packet.State = GetState(12).ToString();
-                    packet.ProcessId = 0;
-                    packet.Protocol = ProtocolType.ARP;
+                    MIB_IPNETROW arpRow = ipNetTable.table[i];
+                    PacketConnectionInfo packet = new PacketConnectionInfo
+                    {
+                        LocalAddress = ConvertIpAddress(arpRow.dwAddr).ToString(),
+                        LocalPort = 0,
+                        RemoteAddress = ConvertIpAddress(arpRow.dwPhysAddrLen).ToString(),
+                        RemotePort = 0,
+                        State = GetState(-1),
+                        ProcessId = 0,
+                        Protocol = ProtocolType.ARP
+                    };
                     packetConnectionInfos[i + tcpTable.dwNumEntries + udpTable.dwNumEntries] = packet;
                 }
 
+                // Populate ARP table data
                 for (int i = 0; i < arpTable.NumberOfEntries; i++)
                 {
-                    var d = arpTable.ARPConnections[i];
-                    MIB_ARPROW arpRow = d;
-                    PacketConnectionInfo packet = new PacketConnectionInfo();
-                    packet.LocalAddress = arpRow.Address.ToString();
-                    packet.LocalPort = 0;
-                    packet.MacAddress = arpRow.PhysicalAddress.ToString();
-                    packet.RemoteAddress = "";
-                    packet.RemotePort = 0;
-                    packet.State = GetState(-1).ToString();
-                    packet.ProcessId = 0;
-                    packet.Protocol = ProtocolType.ARP;
-                    packetConnectionInfos[i + tcpTable.dwNumEntries + udpTable.dwNumEntries + mIB_IPNETTABLE.dwNumEntries] = packet;
+                    var arpRow = arpTable.ARPConnections[i];
+                    PacketConnectionInfo packet = new PacketConnectionInfo
+                    {
+                        LocalAddress = arpRow.Address.ToString(),
+                        LocalPort = 0,
+                        MacAddress = arpRow.PhysicalAddress.ToString(),
+                        RemoteAddress = "",
+                        RemotePort = 0,
+                        State = GetState(-1),
+                        ProcessId = 0,
+                        Protocol = ProtocolType.ARP
+                    };
+                    packetConnectionInfos[i + tcpTable.dwNumEntries + udpTable.dwNumEntries + ipNetTable.dwNumEntries] = packet;
                 }
 
-                OnNewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos);
+                // Trigger the event for loading new packet connections
+                NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos);
 
-                // Kiểm tra nếu các gói đã lấy trước đó mà vẫn còn tồn tại trong _oldPackets thì bỏ qua, nếu không thì gọi sự kiện OnNewPacketConnectionStarted
-                packetConnectionInfos.ToList().ForEach(x =>
+                // Check and trigger events for new and ended connections
+                foreach (var packet in packetConnectionInfos)
                 {
-                    if (!_oldPackets.Contains(x))
+                    if (!_previousPackets.Contains(packet))
                     {
-                        OnNewPacketConnectionStarted?.Invoke(this, x);
+                        NewPacketConnectionStarted?.Invoke(this, packet);
                     }
+                }
 
-                });
-
-                // Kiểm tra gói cũ mà không có trong gói mới thì gọi sự kiện OnNewPacketConnectionEnded
-                _oldPackets.ToList().ForEach(x =>
+                foreach (var oldPacket in _previousPackets)
                 {
-                    if (!packetConnectionInfos.Contains(x))
-                        OnNewPacketConnectionEnded?.Invoke(this, x);
-                });
+                    if (!packetConnectionInfos.Contains(oldPacket))
+                    {
+                        NewPacketConnectionEnded?.Invoke(this, oldPacket);
+                    }
+                }
 
                 Thread.Sleep(5000);
-                _oldPackets = packetConnectionInfos;
+                _previousPackets = packetConnectionInfos;
             }
             while (IsAutoReload);
-
         }
 
         #endregion
-
     }
 }

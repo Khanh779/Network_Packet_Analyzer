@@ -1,6 +1,6 @@
 ﻿using Network_Packet_Traffic.Connections.Enums;
 
-namespace Network_Packet_Traffic.Connections.Struct
+namespace Network_Packet_Traffic.Connections.Structs
 {
     public struct PacketConnectionInfo
     {
@@ -10,7 +10,7 @@ namespace Network_Packet_Traffic.Connections.Struct
         public string RemoteAddress;
         public int RemotePort;
         public int ProcessId;
-        public string State;
+        public StateType State;
         public ProtocolType Protocol;
     }
 }
