@@ -146,8 +146,11 @@ namespace Network_Packet_Traffic
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            listViewConnections.Items.Clear();
-            UpdateListView(this, connectionsMonitor.GetPacketConnections().ToArray());
+            if (connectionsMonitor != null && listViewConnections.Items.Count > 0)
+            {
+                listViewConnections.Items.Clear();
+                UpdateListView(this, connectionsMonitor.GetPacketConnections().ToArray());
+            }
         }
     }
 }
