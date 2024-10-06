@@ -111,9 +111,10 @@ namespace Network_Packet_Traffic.SocketViaAdmin
                 ipHeaderList = new List<IPHeader>();
                 Task.Run(() =>
                 {
-                    byte[] buffer = new byte[4096];
                     while (isListening)
                     {
+                        byte[] buffer = new byte[4096];
+
                         IAsyncResult asyncResult = socket.BeginReceive(buffer, 0, buffer.Length, SocketFlags.None, null, null);
                         var length = socket.EndReceive(asyncResult);
                         var sourcePort = (buffer[20] << 8) + buffer[21];
@@ -133,6 +134,7 @@ namespace Network_Packet_Traffic.SocketViaAdmin
 
                         ipHeaderList.Add(ipHeader);
                         PacketReceived?.Invoke(this, ipHeader); // Invoke the event if there are subscribers
+
                     }
                 });
             }

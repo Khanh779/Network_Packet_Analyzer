@@ -1,5 +1,6 @@
 ﻿using Network_Packet_Traffic.Connections.Enums;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -38,6 +39,14 @@ namespace Network_Packet_Traffic.Connections
         [DllImport("Ws2_32.dll")]
         public static extern Int32 inet_addr(string ip);
 
+        /// <summary>
+        /// Retrieves the MAC address associated with a given IP address.
+        /// </summary>
+        /// <param name="ipAddress">The IP address for which to retrieve the MAC address.</param>
+        /// <returns>
+        /// A string representing the MAC address in hexadecimal format, or 
+        /// null if the MAC address could not be retrieved.
+        /// </returns>
         public static string GetMacAddress(string ipAddress)
         {
             try
@@ -72,6 +81,14 @@ namespace Network_Packet_Traffic.Connections
             }
         }
 
+        /// <summary>
+        /// Retrieves the error message description for a specified API error number.
+        /// </summary>
+        /// <param name="ApiErrNumber">The API error number for which to retrieve the description.</param>
+        /// <returns>
+        /// A string containing the error message description, including the error number, 
+        /// or "none" if the message could not be retrieved.
+        /// </returns>
         public static string GetAPIErrorMessageDescription(int ApiErrNumber)
         {
             StringBuilder sError = new StringBuilder(512);
@@ -87,20 +104,94 @@ namespace Network_Packet_Traffic.Connections
             return "none";
         }
 
+        /// <summary>
+        /// Retrieves the state type corresponding to a numeric state value.
+        /// </summary>
+        /// <param name="numState">The numeric state value to convert.</param>
+        /// <returns>
+        /// A <see cref="StateType"/> representing the state, or 
+        /// <see cref="StateType.UNKNOWN"/> if the value is not defined.
+        /// </returns>
         public static StateType GetState(int numState)
         {
-            // Nếu tồn tại số uint strong trong enum StateType thì trả về giá trị tương ứng, ngược lại, trả về Unknown
+            // If the number is a valid StateType, return it
             if (Enum.IsDefined(typeof(StateType), numState))
                 return (StateType)numState;
             else
                 return StateType.UNKNOWN;
         }
 
+
+        /// <summary>
+        /// Retrieves the name of the process based on its process ID.
+        /// </summary>
+        /// <param name="processId">The ID of the process to retrieve the name for.</param>
+        /// <returns>
+        /// A string containing the name of the process if found; 
+        /// otherwise, returns "Unknown" in case of an exception.
+        /// </returns>
+        public static string GetProcessName(int processId)
+        {
+            try
+            {
+                // Get the process using the provided process ID
+                System.Diagnostics.Process process = System.Diagnostics.Process.GetProcessById(processId);
+                return process.ProcessName; // Return the process name
+            }
+            catch (Exception)
+            {
+                // In case of any exceptions (e.g., process not found), return "Unknown"
+                return "Unknown";
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the <see cref="Process"/> object corresponding to the specified process ID.
+        /// </summary>
+        /// <param name="processId">The ID of the process to retrieve.</param>
+        /// <returns>
+        /// A <see cref="Process"/> object representing the specified process; 
+        /// or null if the process could not be found or an error occurred.
+        /// </returns>
+        public static Process GetProcessInformation(int processId)
+        {
+            try
+            {
+                // Get the process using the provided process ID
+                Process process = Process.GetProcessById(processId);
+                return process; // Return the Process object
+            }
+            catch (ArgumentException)
+            {
+                // Process with the specified ID does not exist
+                Console.WriteLine($"Error: No process with ID {processId} exists.");
+            }
+            catch (Exception ex)
+            {
+                // Handle other potential exceptions
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return null; // Return null if the process could not be found
+        }
+
+
+        /// <summary>
+        /// Converts an integer representation of an IP address to an <see cref="IPAddress"/> object.
+        /// </summary>
+        /// <param name="ipAddress">The integer representation of the IP address.</param>
+        /// <returns>
+        /// An <see cref="IPAddress"/> object corresponding to the provided integer IP address.
+        /// </returns>
         public static IPAddress ConvertIpAddress(int ipAddress)
         {
-
+            // Convert the integer IP address to a byte array
             byte[] ipBytes = BitConverter.GetBytes(ipAddress);
+
+            // Reverse the byte array to match the correct IP address format (little-endian to big-endian)
             Array.Reverse(ipBytes);
+
+            // Create and return an IPAddress object using the byte array
             return new IPAddress(ipBytes);
         }
     }
