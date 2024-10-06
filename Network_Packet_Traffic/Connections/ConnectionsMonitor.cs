@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using System.Windows.Forms;
 using static Network_Packet_Traffic.Connections.NetHelper;
 
 namespace Network_Packet_Traffic.Connections
@@ -91,94 +92,122 @@ namespace Network_Packet_Traffic.Connections
                 _monitorThread.Abort();
         }
 
+        /// <summary>
+        /// Gets or sets the protocol filter for the packet connections.
+        /// </summary>
+        public ProtocolFilter ProtocolFilter { get; set; } = ProtocolFilter.All;
+
+
+        List<PacketConnectionInfo> GetBasePacket(ProtocolFilter protocolFilter = ProtocolFilter.All)
+        {
+            List<PacketConnectionInfo> packetConnectionInfos = new List<PacketConnectionInfo>();
+
+            // Avoid loading unnecessary data based on the protocol filter
+            if (protocolFilter == ProtocolFilter.All || protocolFilter == ProtocolFilter.TCP)
+            {
+                // Populate TCP connection data only if TCP is selected or all protocols
+                MIB_TCPTABLE_OWNER_PID tcpTable = TCP.TCP_Info.GetTcpTable();
+                for (int i = 0; i < tcpTable.dwNumEntries; i++)
+                {
+                    MIB_TCPROW_OWNER_PID tcpRow = tcpTable.table[i];
+                    packetConnectionInfos.Add(new PacketConnectionInfo
+                    {
+                        LocalAddress = ConvertIpAddress(tcpRow.dwLocalAddr),
+                        LocalPort = tcpRow.dwLocalPort,
+                        RemoteAddress = ConvertIpAddress(tcpRow.dwRemoteAddr),
+                        RemotePort = tcpRow.dwRemotePort,
+                        ProcessId = tcpRow.dwOwningPid,
+                        Protocol = ProtocolType.TCP,
+                        State = GetState(tcpRow.dwState)
+                    });
+                }
+            }
+
+            if (protocolFilter == ProtocolFilter.All || protocolFilter == ProtocolFilter.UDP)
+            {
+                // Populate UDP connection data only if UDP is selected or all protocols
+                MIB_UDPTABLE_OWNER_PID udpTable = UDP.UDP_Info.GetUdpTable();
+                for (int i = 0; i < udpTable.dwNumEntries; i++)
+                {
+                    MIB_UDPROW_OWNER_PID udpRow = udpTable.table[i];
+                    packetConnectionInfos.Add(new PacketConnectionInfo
+                    {
+                        LocalAddress = ConvertIpAddress(udpRow.dwLocalAddr),
+                        LocalPort = udpRow.dwLocalPort,
+                        RemoteAddress = IPAddress.None, // No remote address for listening sockets
+                        RemotePort = 0, // Same for remote port in UDP listening
+                        State = GetState(-1),
+                        ProcessId = udpRow.dwOwningPid,
+                        Protocol = ProtocolType.UDP
+                    });
+                }
+            }
+
+            if (protocolFilter == ProtocolFilter.All || protocolFilter == ProtocolFilter.IPNET)
+            {
+                // Populate IPNET (similar to ARP) connection data
+                MIB_IPNETTABLE ipNetTable = IPNET.IPNET_Info.GetIpNetTable();
+                for (int i = 0; i < ipNetTable.dwNumEntries; i++)
+                {
+                    MIB_IPNETROW ipnetRow = ipNetTable.table[i];
+                    packetConnectionInfos.Add(new PacketConnectionInfo
+                    {
+                        LocalAddress = ConvertIpAddress(ipnetRow.dwAddr),
+                        LocalPort = 0,
+                        RemoteAddress = IPAddress.None, // No remote address, mapping to MAC address
+                        MACAddress = ConvertMacAddress(ipnetRow.bPhysAddr),
+                        RemotePort = 0,
+                        State = GetState(-1),
+                        ProcessId = 0,
+                        Protocol = ProtocolType.IPNET
+                    });
+                }
+            }
+
+            if (protocolFilter == ProtocolFilter.All || protocolFilter == ProtocolFilter.ARP)
+            {
+                // Populate ARP table data only if ARP is selected or all protocols
+                MIB_ARPTABLE arpTable = ARP.ARP_Info.GetARPTable();
+                for (int i = 0; i < arpTable.NumberOfEntries; i++)
+                {
+                    MIB_ARPROW arpRow = arpTable.arpTable[i];
+                    packetConnectionInfos.Add(new PacketConnectionInfo
+                    {
+                        LocalAddress = ConvertIpAddress(arpRow.dwAddr),
+                        LocalPort = 0,
+                        MacAddress = ConvertMacAddress(arpRow.bPhysAddr),
+                        RemoteAddress = IPAddress.None,
+                        RemotePort = 0,
+                        State = GetState(-1),
+                        ProcessId = 0,
+                        Protocol = ProtocolType.ARP
+                    });
+                }
+            }
+
+            return packetConnectionInfos;
+        }
 
         /// <summary>
-        /// Gets the packet connections from the TCP, UDP, IPNET, and ARP tables.
+        /// Gets the packet connections based on the selected <see cref="ProtocolFilter"/>.
         /// </summary>
+        /// <param name="protocolFilter">Filter to select specific protocols or all of them.</param>
+        /// <returns>List of <see cref="PacketConnectionInfo"/> based on the protocol filter.</returns>
+        public List<PacketConnectionInfo> GetPacketConnections(ProtocolFilter protocolFilter)
+        {
+            return GetBasePacket(protocolFilter);
+        }
+
+        /// <summary>
+        /// Gets all packet connections based on the <see cref="ProtocolFilter"/>.
+        /// </summary>
+        /// <returns>List of <see cref="PacketConnectionInfo"/> for all protocols.</returns>
         public List<PacketConnectionInfo> GetPacketConnections()
         {
-            MIB_TCPTABLE_OWNER_PID tcpTable = TCP.TCP_Info.GetTcpTable();
-            MIB_UDPTABLE_OWNER_PID udpTable = UDP.UDP_Info.GetUdpTable();
-
-            MIB_IPNETTABLE ipNetTable = IPNET.IPNET_Info.GetIpNetable();
-            var arpTable = ARP.ARP_Info.GetARPTable();
-
-            // Combine all packet connection information from TCP, UDP, IPNET, and ARP tables
-            PacketConnectionInfo[] packetConnectionInfos = new PacketConnectionInfo[tcpTable.dwNumEntries + udpTable.dwNumEntries + ipNetTable.dwNumEntries + arpTable.NumberOfEntries];
-
-            // Populate TCP connection data
-            for (int i = 0; i < tcpTable.dwNumEntries; i++)
-            {
-                MIB_TCPROW_OWNER_PID tcpRow = tcpTable.table[i];
-                PacketConnectionInfo packet = new PacketConnectionInfo
-                {
-                    LocalAddress = ConvertIpAddress((int)tcpRow.dwLocalAddr),
-                    LocalPort = (int)tcpRow.dwLocalPort,
-                    RemoteAddress = ConvertIpAddress((int)tcpRow.dwRemoteAddr),
-                    RemotePort = (int)tcpRow.dwRemotePort,
-                    ProcessId = (int)tcpRow.dwOwningPid,
-                    Protocol = ProtocolType.TCP,
-                    State = GetState((int)tcpRow.dwState)
-                };
-                packetConnectionInfos[i] = packet;
-            }
-
-            // Populate UDP connection data
-            for (int i = 0; i < udpTable.dwNumEntries; i++)
-            {
-                MIB_UDPROW_OWNER_PID udpRow = udpTable.table[i];
-                PacketConnectionInfo packet = new PacketConnectionInfo
-                {
-                    LocalAddress = ConvertIpAddress((int)udpRow.dwLocalAddr),
-                    LocalPort = udpRow.dwLocalPort,
-                    RemoteAddress = new System.Net.IPAddress(0), // UDP typically has no remote address for listening sockets
-                    RemotePort = (int)udpRow.dwRemotePort, // Same for remote port
-                    State = GetState(-1),
-                    ProcessId = udpRow.dwOwningPid,
-                    Protocol = ProtocolType.UDP
-                };
-                packetConnectionInfos[i + tcpTable.dwNumEntries] = packet;
-            }
-
-            // Populate IPNET (ARP-like) connection data
-            for (int i = 0; i < ipNetTable.dwNumEntries; i++)
-            {
-                MIB_IPNETROW ipnetRow = ipNetTable.table[i];
-                PacketConnectionInfo packet = new PacketConnectionInfo
-                {
-                    LocalAddress = ConvertIpAddress(ipnetRow.dwAddr),
-                    LocalPort = 0,
-                    RemoteAddress = IPAddress.None, // Changed to correctly map to MAC address,
-                    MACAddress = ConvertMacAddress(ipnetRow.bPhysAddr),
-                    RemotePort = 0,
-                    State = GetState(-1),
-                    ProcessId = 0,
-                    Protocol = ProtocolType.IPNET
-                };
-                packetConnectionInfos[i + tcpTable.dwNumEntries + udpTable.dwNumEntries] = packet;
-            }
-
-            // Populate ARP table data
-            for (int i = 0; i < arpTable.NumberOfEntries; i++)
-            {
-                var arpRow = arpTable.ARPConnections[i];
-                PacketConnectionInfo packet = new PacketConnectionInfo
-                {
-                    LocalAddress = arpRow.Address,
-                    LocalPort = 0,
-                    MacAddress = arpRow.PhysicalAddress.ToString(),
-                    RemoteAddress = new System.Net.IPAddress(0),
-                    MACAddress = ConvertMacAddress(arpRow.PhysicalAddress),
-                    RemotePort = 0,
-                    State = GetState(-1),
-                    ProcessId = 0,
-                    Protocol = ProtocolType.ARP
-                };
-                packetConnectionInfos[i + tcpTable.dwNumEntries + udpTable.dwNumEntries + ipNetTable.dwNumEntries] = packet;
-            }
-
-            return packetConnectionInfos.ToList();
+            return GetBasePacket(ProtocolFilter.All);
         }
+
+
 
         #region Connection Monitoring
 
@@ -189,7 +218,7 @@ namespace Network_Packet_Traffic.Connections
         {
             do
             {
-                PacketConnectionInfo[] packetConnectionInfos = GetPacketConnections().ToArray();
+                PacketConnectionInfo[] packetConnectionInfos = GetBasePacket(ProtocolFilter).ToArray();
 
                 // Trigger the event for loading new packet connections
                 NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos);

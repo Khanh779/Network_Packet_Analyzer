@@ -1,15 +1,23 @@
-﻿using Network_Packet_Traffic.Connections.IPNET;
+﻿using Network_Packet_Traffic.Connections.ARP;
 using System.Net;
+using System.Runtime.InteropServices;
 
 namespace Network_Packet_Traffic.Connections.ARP
 {
-    public class MIB_ARPROW
-    {
-        public int Index { get; set; }
-        public int PhysicalAddressLength { get; set; }
-        public byte[] PhysicalAddress { get; set; }
-        public IPAddress Address { get; set; }
-        public MIB_IPNET_TYPE Type { get; set; }
 
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MIB_ARPROW
+    {
+        [MarshalAs(UnmanagedType.U4)]
+        public int dwIndex;
+        [MarshalAs(UnmanagedType.U4)]
+        public int dwPhysAddrLen;
+        [MarshalAs(UnmanagedType.U4)]
+        public int dwAddr;
+        [MarshalAs(UnmanagedType.U4)]
+        public MIB_ARP_TYPE dwType;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]
+        public byte[] bPhysAddr;
     }
 }

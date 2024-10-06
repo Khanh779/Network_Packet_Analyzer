@@ -2,6 +2,7 @@
 using Network_Packet_Traffic.Connections.Enums;
 using Network_Packet_Traffic.Connections.Structs;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -34,7 +35,7 @@ namespace Network_Packet_Traffic
         private void InitializeConnectionsMonitor()
         {
             connectionsMonitor = new ConnectionsMonitor(true);
-            connectionsMonitor.NewPacketsConnectionLoad += UpdateListView;
+            //connectionsMonitor.NewPacketsConnectionLoad += UpdateListView;
             connectionsMonitor.NewPacketConnectionStarted += OnPacketConnectionStarted;
             connectionsMonitor.NewPacketConnectionEnded += OnPacketConnectionEnded;
             connectionsMonitor.StartListening();
@@ -48,25 +49,35 @@ namespace Network_Packet_Traffic
                 return;
             }
 
+            List<ListViewItem> newItems = new List<ListViewItem>(); // Tạo danh sách các mục mới
+
             foreach (var packet in packets)
             {
                 if (CheckPacketState(packet))
                 {
                     var newItem = CreateListViewItem(packet);
 
+                    // Kiểm tra xem mục đã tồn tại hay chưa
                     if (!listViewConnections.Items.Contains(newItem))
                     {
-                        listViewConnections.Invoke((Action)(() =>
-                        {
-                            listViewConnections.Items.Add(newItem);
-                        }));
+                        newItems.Add(newItem); // Thêm mục vào danh sách mới
                     }
                 }
+            }
+
+            // Thêm tất cả các mục mới vào ListView cùng một lúc
+            if (newItems.Count > 0)
+            {
+                listViewConnections.Invoke((Action)(() =>
+                {
+                    listViewConnections.Items.AddRange(newItems.ToArray()); // Thêm vào ListView
+                }));
             }
 
             isLoadedConnections = true;
             UpdateStatusLabel();
         }
+
 
         // Biến bool để kiểm tra gói có nên thêm vào ListView hay không dựa trên tempState
         // Nếu tempState = 0 thì thêm tất cả các gói vào ListView. Còn nếu tempState khác 0 thì chỉ thêm gói có State = tempState - 1 lọc gói dựa trên StateType của gói
@@ -171,7 +182,6 @@ namespace Network_Packet_Traffic
             {
                 listViewConnections.Items.Clear();
                 tempState = comboBoxStateFilter.SelectedIndex;
-                UpdateListView(this, connectionsMonitor.GetPacketConnections().ToArray());
             }
         }
     }

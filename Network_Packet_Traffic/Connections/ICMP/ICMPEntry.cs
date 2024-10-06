@@ -8,10 +8,10 @@ namespace Network_Packet_Traffic.Connections.ICMP
     [StructLayout(LayoutKind.Sequential)]
     public struct ICMPEntry
     {
-        public uint Address;            // The IP address of the host.
+        public int Address;            // The IP address of the host.
         public uint ReceiveCount;       // Number of ICMP messages received from this address.
         public uint SendCount;          // Number of ICMP messages sent to this address.
-        public uint Errors;             // Number of errors encountered.
+        public int Errors;             // Number of errors encountered.
         public uint TimeStamp;          // Last time a packet was received or sent.
     }
 }

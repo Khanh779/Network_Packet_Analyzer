@@ -56,7 +56,8 @@ namespace Network_Packet_Traffic.Connections.UDP
 
                 udpTable.dwNumEntries = (uint)Marshal.ReadIntPtr(buffTable);
 
-                IntPtr buffTablePointer = buffTable + Marshal.SizeOf(udpTable.dwNumEntries);
+                IntPtr buffTablePointer = (IntPtr)((long)buffTable + Marshal.SizeOf(typeof(uint)));
+                //IntPtr buffTablePointer = buffTable + Marshal.SizeOf(udpTable.dwNumEntries);
                 MIB_UDPROW_OWNER_PID[] udpRows = new MIB_UDPROW_OWNER_PID[udpTable.dwNumEntries];
 
                 for (int i = 0; i < udpTable.dwNumEntries; i++)

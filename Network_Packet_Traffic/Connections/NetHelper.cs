@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
@@ -39,47 +40,7 @@ namespace Network_Packet_Traffic.Connections
         [DllImport("Ws2_32.dll")]
         public static extern Int32 inet_addr(string ip);
 
-        /// <summary>
-        /// Retrieves the MAC address associated with a given IP address.
-        /// </summary>
-        /// <param name="ipAddress">The IP address for which to retrieve the MAC address.</param>
-        /// <returns>
-        /// A string representing the MAC address in hexadecimal format, or 
-        /// null if the MAC address could not be retrieved.
-        /// </returns>
-        public static string GetMacAddress(string ipAddress)
-        {
-            try
-            {
-                int dest = inet_addr(ipAddress);
-                byte[] macAddr = new byte[6];
-                uint macAddrLen = (uint)macAddr.Length;
-
-                // Gọi API SendARP để lấy địa chỉ MAC
-                int result = SendARP(dest, 0, macAddr, ref macAddrLen);
-
-                if (result != 0)
-                {
-                    MessageBox.Show("Error: Unable to retrieve ARP info");
-                    return null;
-                }
-
-                StringBuilder macAddressString = new StringBuilder();
-                for (int i = 0; i < macAddrLen; i++)
-                {
-                    if (i > 0)
-                        macAddressString.Append(":");
-                    macAddressString.AppendFormat("{0:X2}", macAddr[i]);
-                }
-
-                return macAddressString.ToString();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-                return null;
-            }
-        }
+       
 
         /// <summary>
         /// Retrieves the error message description for a specified API error number.
@@ -200,15 +161,79 @@ namespace Network_Packet_Traffic.Connections
         /// </summary>
         public static string ConvertMacAddress(byte[] macAddress)
         {
-            StringBuilder macAddressString = new StringBuilder();
-            for (int i = 0; i < macAddress.Length; i++)
-            {
-                if (i > 0)
-                    macAddressString.Append(":");
-                macAddressString.AppendFormat("{0:X2}", macAddress[i]);
-            }
+            // Create a PhysicalAddress from the byte array
+            PhysicalAddress physicalAddress = new PhysicalAddress(macAddress);
 
-            return macAddressString.ToString();
+            // Convert the PhysicalAddress to a string in the format "XX-XX-XX-XX-XX-XX"
+            string macAddressString = BitConverter.ToString(physicalAddress.GetAddressBytes()).Replace("-", ":");
+            return macAddressString;
         }
+
+
+        /// <summary>
+        /// Retrieves the MAC address associated with a given IP address.
+        /// </summary>
+        /// <param name="ipAddress">The IP address for which to retrieve the MAC address.</param>
+        /// <returns>
+        /// A string representing the MAC address in hexadecimal format, or 
+        /// null if the MAC address could not be retrieved.
+        /// </returns>
+        public static string GetMacAddress(string ipAddress)
+        {
+            string macAddress = string.Empty;
+            try
+            {
+                int remoteMachine = BitConverter.ToInt32(System.Net.IPAddress.Parse(ipAddress).GetAddressBytes(), 0);
+                byte[] macAddr = new byte[6];
+                uint macAddrLen = (uint)macAddr.Length;
+                if (SendARP(remoteMachine, 0, macAddr, ref macAddrLen) == 0)
+                {
+                    string[] str = new string[(int)macAddrLen];
+                    for (int i = 0; i < macAddrLen; i++)
+                        str[i] = macAddr[i].ToString("x2");
+                    macAddress = string.Join(":", str);
+                }
+            }
+            catch (Exception ex)
+            {
+                macAddress = "Error: " + ex.Message;
+            }
+            return macAddress;
+        }
+
+       
+        //public static string GetMacAddress(string ipAddress)
+        //{
+        //    try
+        //    {
+        //        int dest = inet_addr(ipAddress);
+        //        byte[] macAddr = new byte[6];
+        //        uint macAddrLen = (uint)macAddr.Length;
+
+        //        // Gọi API SendARP để lấy địa chỉ MAC
+        //        int result = SendARP(dest, 0, macAddr, ref macAddrLen);
+
+        //        if (result != 0)
+        //        {
+        //            MessageBox.Show("Error: Unable to retrieve ARP info");
+        //            return null;
+        //        }
+
+        //        StringBuilder macAddressString = new StringBuilder();
+        //        for (int i = 0; i < macAddrLen; i++)
+        //        {
+        //            if (i > 0)
+        //                macAddressString.Append(":");
+        //            macAddressString.AppendFormat("{0:X2}", macAddr[i]);
+        //        }
+
+        //        return macAddressString.ToString();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("Error: " + ex.Message);
+        //        return null;
+        //    }
+        //}
     }
 }

@@ -6,7 +6,7 @@ namespace Network_Packet_Traffic.Connections.UDP
     public struct MIB_UDPSTATS
     {
         public uint dwInDatagrams;
-        public uint dwNoPorts;
+        public ushort dwNoPorts;
         public uint dwInErrors;
         public uint dwOutDatagrams;
         public uint dwNumAddrs;

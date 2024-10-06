@@ -1,9 +1,12 @@
-﻿namespace Network_Packet_Traffic.Connections.ARP
+﻿using System.Runtime.InteropServices;
+
+namespace Network_Packet_Traffic.Connections.ARP
 {
+    [StructLayout(LayoutKind.Sequential)]
     public struct MIB_ARPTABLE
     {
-        public int NumberOfEntries { get; set; }
-        public ARP.MIB_ARPROW[] ARPConnections { get; set; }
+        public uint NumberOfEntries { get; set; }
+        public ARP.MIB_ARPROW[] arpTable { get; set; }
 
 
     }

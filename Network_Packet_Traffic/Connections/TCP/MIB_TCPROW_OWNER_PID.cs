@@ -5,11 +5,11 @@ namespace Network_Packet_Traffic.Connections.TCP
     [StructLayout(LayoutKind.Sequential)]
     public struct MIB_TCPROW_OWNER_PID
     {
-        public uint dwState;
-        public uint dwLocalAddr;
-        public uint dwLocalPort;
-        public uint dwRemoteAddr;
-        public uint dwRemotePort;
+        public int dwState;
+        public int dwLocalAddr;
+        public ushort dwLocalPort;
+        public int dwRemoteAddr;
+        public ushort dwRemotePort;
         public uint dwOwningPid;
     }
 }
