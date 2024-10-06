@@ -46,24 +46,27 @@ namespace Network_Packet_Traffic
             // Add packets directly to the ListView
             foreach (var packet in packets)
             {
-                var newItem = new ListViewItem(new string[]
+                if (comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == "ALL" || comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == packet.State.ToString())
                 {
-                    packet.ProcessId.ToString(),
-                    packet.LocalAddress.ToString(),
-                    packet.LocalPort.ToString(),
-                    packet.RemoteAddress.ToString(),
-                    packet.RemotePort.ToString(),
-                    packet.Protocol.ToString(),
-                    packet.State.ToString(),
-                    NetHelper.GetProcessName((int)packet.ProcessId)
-                });
-
-                if (!listViewConnections.Items.Contains(newItem))
-                {
-                    listViewConnections.Invoke((Action)(() =>
+                    var newItem = new ListViewItem(new string[]
                     {
-                        listViewConnections.Items.Add(newItem);
-                    }));
+                        packet.ProcessId.ToString(),
+                        packet.LocalAddress.ToString(),
+                        packet.LocalPort.ToString(),
+                        packet.RemoteAddress.ToString(),
+                        packet.RemotePort.ToString(),
+                        packet.Protocol.ToString(),
+                        packet.State.ToString(),
+                        NetHelper.GetProcessName((int)packet.ProcessId)
+                    });
+
+                    if (!listViewConnections.Items.Contains(newItem))
+                    {
+                        listViewConnections.Invoke((Action)(() =>
+                        {
+                            listViewConnections.Items.Add(newItem);
+                        }));
+                    }
                 }
             }
 
@@ -99,14 +102,14 @@ namespace Network_Packet_Traffic
                     NetHelper.GetProcessName((int) packet.ProcessId)
                 });
 
-                if(!listViewConnections.Items.Contains(newItem))
+                if (!listViewConnections.Items.Contains(newItem))
                 {
                     listViewConnections.Invoke((Action)(() =>
                     {
                         listViewConnections.Items.Add(newItem);
 
                     }));
-                }    
+                }
                 UpdateStatusLabel(); // Cập nhật label trạng thái
             }
         }

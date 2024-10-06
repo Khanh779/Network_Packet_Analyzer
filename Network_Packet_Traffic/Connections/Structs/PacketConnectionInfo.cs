@@ -7,10 +7,10 @@ namespace Network_Packet_Traffic.Connections.Structs
     {
         public IPAddress LocalAddress;
         public string MacAddress;
-        public uint LocalPort;
+        public int LocalPort;
         public IPAddress RemoteAddress;
-        public uint RemotePort;
-        public uint ProcessId;
+        public int RemotePort;
+        public int ProcessId;
         public StateType State;
         public ProtocolType Protocol;
     }
