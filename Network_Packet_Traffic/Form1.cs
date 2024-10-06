@@ -11,6 +11,7 @@ namespace Network_Packet_Traffic
     {
         private ConnectionsMonitor connectionsMonitor;
         private bool isLoadedConnections = false;
+        private int tempState = 0;
 
         public Form1()
         {
@@ -19,11 +20,15 @@ namespace Network_Packet_Traffic
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            InitializeComboBox();
+            InitializeConnectionsMonitor();
+        }
+
+        private void InitializeComboBox()
+        {
             comboBoxStateFilter.Items.Add("ALL");
             comboBoxStateFilter.Items.AddRange(Enum.GetNames(typeof(StateType)));
             comboBoxStateFilter.SelectedIndex = 0;
-
-            InitializeConnectionsMonitor();
         }
 
         private void InitializeConnectionsMonitor()
@@ -43,46 +48,61 @@ namespace Network_Packet_Traffic
                 return;
             }
 
-            // Add packets directly to the ListView
             foreach (var packet in packets)
             {
-                if (comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == "ALL" ||
-                    comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == packet.State.ToString())
+                if (CheckPacketState(packet))
                 {
-                    var newItem = new ListViewItem(new string[]
-                    {
-                        packet.ProcessId.ToString(),
-                        packet.LocalAddress.ToString(),
-                        packet.LocalPort.ToString(),
-                        packet.RemoteAddress.ToString(),
-                        packet.RemotePort.ToString(),
-                        packet.Protocol.ToString(),
-                        packet.State.ToString(),
-                        NetHelper.GetProcessName((int)packet.ProcessId)
-                    });
+                    var newItem = CreateListViewItem(packet);
 
                     if (!listViewConnections.Items.Contains(newItem))
                     {
-                        listViewConnections.Invoke((Action)(() =>
-                        {
-                            listViewConnections.Items.Add(newItem);
-                        }));
+                        listViewConnections.Items.Add(newItem);
                     }
                 }
             }
 
             isLoadedConnections = true;
-            UpdateStatusLabel(); // Cập nhật label trạng thái
+            UpdateStatusLabel();
+        }
 
+        // Biến bool để kiểm tra gói có nên thêm vào ListView hay không dựa trên tempState
+        // Nếu tempState = 0 thì thêm tất cả các gói vào ListView. Còn nếu tempState khác 0 thì chỉ thêm gói có State = tempState - 1 lọc gói dựa trên StateType của gói
+        bool CheckPacketState(PacketConnectionInfo packet)
+        {
+            if (tempState <= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return packet.State == (StateType)(tempState - 1);
+            }
+        }
+
+        private ListViewItem CreateListViewItem(PacketConnectionInfo packet)
+        {
+            return new ListViewItem(new string[]
+            {
+                packet.ProcessId.ToString(),
+                packet.LocalAddress.ToString(),
+                packet.LocalPort.ToString(),
+                packet.RemoteAddress.ToString(),
+                packet.RemotePort.ToString(),
+                packet.Protocol.ToString(),
+                packet.State.ToString(),
+                NetHelper.GetProcessName((int)packet.ProcessId)
+            });
         }
 
 
         private void UpdateStatusLabel()
         {
-            // Cập nhật status label trong luồng chính
             if (statusStrip.InvokeRequired)
             {
-                toolStripStatusLabel.Text = $"Total Connections: {listViewConnections.Items.Count}";
+                statusStrip.Invoke((Action)(() =>
+                {
+                    toolStripStatusLabel.Text = $"Total Connections: {listViewConnections.Items.Count}";
+                }));
             }
 
         }
@@ -91,31 +111,19 @@ namespace Network_Packet_Traffic
         {
             if (isLoadedConnections)
             {
-                var newItem = new ListViewItem(new string[]
-                {
-                    packet.ProcessId.ToString(),
-                    packet.LocalAddress.ToString(),
-                    packet.LocalPort.ToString(),
-                    packet.RemoteAddress.ToString(),
-                    packet.RemotePort.ToString(),
-                    packet.Protocol.ToString(),
-                    packet.State.ToString(),
-                    NetHelper.GetProcessName((int) packet.ProcessId)
-                });
-
-                if (comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == "ALL" ||
-                    comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == packet.State.ToString())
+                var newItem = CreateListViewItem(packet);
+                if (CheckPacketState(packet))
                 {
                     if (!listViewConnections.Items.Contains(newItem))
                     {
                         listViewConnections.Invoke((Action)(() =>
                         {
                             listViewConnections.Items.Add(newItem);
-
                         }));
                     }
                 }
-                UpdateStatusLabel(); // Cập nhật label trạng thái
+
+                UpdateStatusLabel();
             }
         }
 
@@ -125,30 +133,39 @@ namespace Network_Packet_Traffic
             {
                 listViewConnections.Invoke((Action)(() =>
                 {
-                    var itemToRemove = listViewConnections.Items.Cast<ListViewItem>().FirstOrDefault(i =>
-                        i.Text == packet.ProcessId.ToString() &&
-                        i.SubItems[1].Text == packet.LocalAddress.ToString() &&
-                        i.SubItems[2].Text == packet.LocalPort.ToString() &&
-                        i.SubItems[3].Text == packet.RemoteAddress.ToString() &&
-                        i.SubItems[4].Text == packet.RemotePort.ToString() &&
-                        i.SubItems[5].Text == packet.Protocol.ToString() &&
-                        i.SubItems[6].Text == packet.State.ToString() &&
-                        i.SubItems[7].Text == NetHelper.GetProcessName((int)packet.ProcessId));
-
-                    if (itemToRemove != null)
-                    {
-                        listViewConnections.Items.Remove(itemToRemove);
-                    }
-                    UpdateStatusLabel(); // Cập nhật label trạng thái
+                    RemovePacketFromListView(packet);
                 }));
             }
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void RemovePacketFromListView(PacketConnectionInfo packet)
+        {
+            var itemToRemove = listViewConnections.Items.Cast<ListViewItem>().FirstOrDefault(i =>
+                i.Text == packet.ProcessId.ToString() &&
+                i.SubItems[1].Text == packet.LocalAddress.ToString() &&
+                i.SubItems[2].Text == packet.LocalPort.ToString() &&
+                i.SubItems[3].Text == packet.RemoteAddress.ToString() &&
+                i.SubItems[4].Text == packet.RemotePort.ToString() &&
+                i.SubItems[5].Text == packet.Protocol.ToString() &&
+                i.SubItems[6].Text == packet.State.ToString() &&
+                i.SubItems[7].Text == NetHelper.GetProcessName((int)packet.ProcessId));
+
+            if (itemToRemove != null)
+            {
+                listViewConnections.Invoke((Action)(() =>
+                {
+                    listViewConnections.Items.Remove(itemToRemove);
+                }));
+            }
+            UpdateStatusLabel();
+        }
+
+        private void comboBoxStateFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (connectionsMonitor != null && listViewConnections.Items.Count > 0)
             {
                 listViewConnections.Items.Clear();
+                tempState = comboBoxStateFilter.SelectedIndex;
                 UpdateListView(this, connectionsMonitor.GetPacketConnections().ToArray());
             }
         }

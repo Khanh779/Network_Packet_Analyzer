@@ -113,7 +113,7 @@ namespace Network_Packet_Traffic
             this.comboBoxStateFilter.Name = "comboBoxStateFilter";
             this.comboBoxStateFilter.Size = new System.Drawing.Size(150, 21);
             this.comboBoxStateFilter.TabIndex = 2;
-            this.comboBoxStateFilter.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            this.comboBoxStateFilter.SelectedIndexChanged += new System.EventHandler(this.comboBoxStateFilter_SelectedIndexChanged);
             // 
             // statusStrip
             // 
