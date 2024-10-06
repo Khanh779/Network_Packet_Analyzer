@@ -92,7 +92,7 @@ namespace Network_Packet_Traffic.Connections
 
 
         /// <summary>
-        /// Reload the packet connections.
+        /// Gets the packet connections from the TCP, UDP, IPNET, and ARP tables.
         /// </summary>
         public List<PacketConnectionInfo> GetPacketConnections()
         {
