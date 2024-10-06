@@ -46,7 +46,8 @@ namespace Network_Packet_Traffic
             // Add packets directly to the ListView
             foreach (var packet in packets)
             {
-                if (comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == "ALL" || comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == packet.State.ToString())
+                if (comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == "ALL" ||
+                    comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == packet.State.ToString())
                 {
                     var newItem = new ListViewItem(new string[]
                     {
@@ -102,13 +103,17 @@ namespace Network_Packet_Traffic
                     NetHelper.GetProcessName((int) packet.ProcessId)
                 });
 
-                if (!listViewConnections.Items.Contains(newItem))
+                if (comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == "ALL" ||
+                    comboBoxStateFilter.Items[comboBoxStateFilter.SelectedIndex].ToString() == packet.State.ToString())
                 {
-                    listViewConnections.Invoke((Action)(() =>
+                    if (!listViewConnections.Items.Contains(newItem))
                     {
-                        listViewConnections.Items.Add(newItem);
+                        listViewConnections.Invoke((Action)(() =>
+                        {
+                            listViewConnections.Items.Add(newItem);
 
-                    }));
+                        }));
+                    }
                 }
                 UpdateStatusLabel(); // Cập nhật label trạng thái
             }
@@ -141,7 +146,8 @@ namespace Network_Packet_Traffic
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            listViewConnections.Items.Clear();
+            UpdateListView(this, connectionsMonitor.GetPacketConnections().ToArray());
         }
     }
 }

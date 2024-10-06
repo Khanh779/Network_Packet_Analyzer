@@ -4,6 +4,7 @@ using Network_Packet_Traffic.Connections.IPNET;
 using Network_Packet_Traffic.Connections.Structs;
 using Network_Packet_Traffic.Connections.TCP;
 using Network_Packet_Traffic.Connections.UDP;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using static Network_Packet_Traffic.Connections.NetHelper;
@@ -88,6 +89,20 @@ namespace Network_Packet_Traffic.Connections
             if (_monitorThread.ThreadState == ThreadState.Running)
                 _monitorThread.Abort();
         }
+
+
+
+        List<PacketConnectionInfo> getPacke = new List<PacketConnectionInfo>();
+
+        /// <summary>
+        /// Reload the packet connections.
+        /// </summary>
+        public List<PacketConnectionInfo> GetPacketConnections()
+        {
+            MonitorPacketConnections();
+            return getPacke;
+        }
+
 
         #region Connection Monitoring
 
@@ -177,6 +192,8 @@ namespace Network_Packet_Traffic.Connections
 
                 // Trigger the event for loading new packet connections
                 NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos);
+
+                getPacke = packetConnectionInfos.ToList();
 
                 // Check and trigger events for new and ended connections
                 foreach (var packet in packetConnectionInfos)
