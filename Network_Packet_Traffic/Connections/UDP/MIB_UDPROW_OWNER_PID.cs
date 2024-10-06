@@ -11,9 +11,9 @@ namespace Network_Packet_Traffic.Connections.UDP
         //public int dwOwningPid;
 
         public uint dwLocalAddr;
-        public int dwLocalPort;
+        public uint dwLocalPort;
         public uint dwRemoteAddr; // Địa chỉ remote
-        public int dwRemotePort; // Cổng remote
-        public int dwOwningPid;
+        public uint dwRemotePort; // Cổng remote
+        public uint dwOwningPid;
     }
 }

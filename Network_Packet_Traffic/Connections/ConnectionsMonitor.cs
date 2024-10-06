@@ -112,9 +112,9 @@ namespace Network_Packet_Traffic.Connections
                     MIB_TCPROW_OWNER_PID tcpRow = tcpTable.table[i];
                     PacketConnectionInfo packet = new PacketConnectionInfo
                     {
-                        LocalAddress = ConvertIpAddress((int)tcpRow.dwLocalAddr).ToString(),
+                        LocalAddress = ConvertIpAddress((int)tcpRow.dwLocalAddr),
                         LocalPort = tcpRow.dwLocalPort,
-                        RemoteAddress = ConvertIpAddress((int)tcpRow.dwRemoteAddr).ToString(),
+                        RemoteAddress = ConvertIpAddress((int)tcpRow.dwRemoteAddr),
                         RemotePort = tcpRow.dwRemotePort,
                         ProcessId = tcpRow.dwOwningPid,
                         Protocol = ProtocolType.TCP,
@@ -129,9 +129,9 @@ namespace Network_Packet_Traffic.Connections
                     MIB_UDPROW_OWNER_PID udpRow = udpTable.table[i];
                     PacketConnectionInfo packet = new PacketConnectionInfo
                     {
-                        LocalAddress = ConvertIpAddress((int)udpRow.dwLocalAddr).ToString(),
+                        LocalAddress = ConvertIpAddress((int)udpRow.dwLocalAddr),
                         LocalPort = udpRow.dwLocalPort,
-                        RemoteAddress = ConvertIpAddress((int)udpRow.dwRemoteAddr).ToString(),
+                        RemoteAddress = ConvertIpAddress((int)udpRow.dwRemoteAddr),
                         RemotePort = udpRow.dwRemotePort,
                         State = GetState(-1),
                         ProcessId = udpRow.dwOwningPid,
@@ -146,13 +146,13 @@ namespace Network_Packet_Traffic.Connections
                     MIB_IPNETROW arpRow = ipNetTable.table[i];
                     PacketConnectionInfo packet = new PacketConnectionInfo
                     {
-                        LocalAddress = ConvertIpAddress(arpRow.dwAddr).ToString(),
+                        LocalAddress = ConvertIpAddress(arpRow.dwAddr),
                         LocalPort = 0,
-                        RemoteAddress = ConvertIpAddress(arpRow.dwPhysAddrLen).ToString(),
+                        RemoteAddress = ConvertIpAddress(arpRow.dwPhysAddrLen),
                         RemotePort = 0,
                         State = GetState(-1),
                         ProcessId = 0,
-                        Protocol = ProtocolType.ARP
+                        Protocol = ProtocolType.IPNET
                     };
                     packetConnectionInfos[i + tcpTable.dwNumEntries + udpTable.dwNumEntries] = packet;
                 }
@@ -163,10 +163,10 @@ namespace Network_Packet_Traffic.Connections
                     var arpRow = arpTable.ARPConnections[i];
                     PacketConnectionInfo packet = new PacketConnectionInfo
                     {
-                        LocalAddress = arpRow.Address.ToString(),
+                        LocalAddress = arpRow.Address,
                         LocalPort = 0,
                         MacAddress = arpRow.PhysicalAddress.ToString(),
-                        RemoteAddress = "",
+                        RemoteAddress = new System.Net.IPAddress(0),
                         RemotePort = 0,
                         State = GetState(-1),
                         ProcessId = 0,
