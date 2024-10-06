@@ -99,6 +99,7 @@ namespace Network_Packet_Traffic.Connections
         {
             MIB_TCPTABLE_OWNER_PID tcpTable = TCP.TCP_Info.GetTcpTable();
             MIB_UDPTABLE_OWNER_PID udpTable = UDP.UDP_Info.GetUdpTable();
+
             MIB_IPNETTABLE ipNetTable = IPNET.IPNET_Info.GetIpNetable();
             var arpTable = ARP.ARP_Info.GetARPTable();
 
@@ -112,10 +113,10 @@ namespace Network_Packet_Traffic.Connections
                 PacketConnectionInfo packet = new PacketConnectionInfo
                 {
                     LocalAddress = ConvertIpAddress((int)tcpRow.dwLocalAddr),
-                    LocalPort = tcpRow.dwLocalPort,
+                    LocalPort = (int)tcpRow.dwLocalPort,
                     RemoteAddress = ConvertIpAddress((int)tcpRow.dwRemoteAddr),
-                    RemotePort = tcpRow.dwRemotePort,
-                    ProcessId = tcpRow.dwOwningPid,
+                    RemotePort = (int)tcpRow.dwRemotePort,
+                    ProcessId = (int)tcpRow.dwOwningPid,
                     Protocol = ProtocolType.TCP,
                     State = GetState((int)tcpRow.dwState)
                 };
@@ -131,7 +132,7 @@ namespace Network_Packet_Traffic.Connections
                     LocalAddress = ConvertIpAddress((int)udpRow.dwLocalAddr),
                     LocalPort = udpRow.dwLocalPort,
                     RemoteAddress = new System.Net.IPAddress(0), // UDP typically has no remote address for listening sockets
-                    RemotePort = 0, // Same for remote port
+                    RemotePort = (int)udpRow.dwRemotePort, // Same for remote port
                     State = GetState(-1),
                     ProcessId = udpRow.dwOwningPid,
                     Protocol = ProtocolType.UDP

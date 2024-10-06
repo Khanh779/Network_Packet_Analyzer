@@ -68,7 +68,7 @@
     <Compile Include="Connections\UDP\MIB_UDPTABLE_OWNER_PID.cs" />
     <Compile Include="Connections\UDP\UDP_Info.cs" />
     <Compile Include="Connections\UDP\UDP_TABLE_CLASS.cs" />
-    <Compile Include="Connections\Enums\MIB_IPNET_TYPE.cs" />
+    <Compile Include="Connections\IPNET\MIB_IPNET_TYPE.cs" />
     <Compile Include="Connections\Enums\ProtocolType.cs" />
     <Compile Include="Connections\Enums\StateType.cs" />
     <Compile Include="Connections\Structs\PacketConnectionInfo.cs" />

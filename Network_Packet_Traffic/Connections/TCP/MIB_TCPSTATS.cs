@@ -5,20 +5,20 @@ namespace Network_Packet_Traffic.Connections.TCP
     [StructLayout(LayoutKind.Sequential)]
     public struct MIB_TCPSTATS
     {
-        public int dwRtoAlgorithm;
-        public int dwRtoMin;
-        public int dwRtoMax;
-        public int dwMaxConn;
-        public int dwActiveOpens;
-        public int dwPassiveOpens;
-        public int dwAttemptFails;
-        public int dwEstabResets;
-        public int dwCurrEstab;
-        public int dwInSegs;
-        public int dwOutSegs;
-        public int dwRetransSegs;
-        public int dwInErrs;
-        public int dwOutRsts;
-        public int dwNumConns;
+        public uint dwRtoAlgorithm;
+        public uint dwRtoMin;
+        public uint dwRtoMax;
+        public uint dwMaxConn;
+        public uint dwActiveOpens;
+        public uint dwPassiveOpens;
+        public uint dwAttemptFails;
+        public uint dwEstabResets;
+        public uint dwCurrEstab;
+        public uint dwInSegs;
+        public uint dwOutSegs;
+        public uint dwRetransSegs;
+        public uint dwInErrs;
+        public uint dwOutRsts;
+        public uint dwNumConns;
     }
 }

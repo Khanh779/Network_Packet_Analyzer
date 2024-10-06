@@ -3,27 +3,27 @@
     public struct MIB_ARPSTATS
     {
         public ForwardingStatus Forwarding { get; set; }
-        public int DefaultTTL { get; set; }
-        public int InReceives { get; set; }
-        public int InHeaderErrors { get; set; }
-        public int InAddressErrors { get; set; }
-        public int ForwardedDatagrams { get; set; }
-        public int InUnknownProtocols { get; set; }
-        public int InDiscards { get; set; }
-        public int InDelivers { get; set; }
+        public uint DefaultTTL { get; set; }
+        public uint InReceives { get; set; }
+        public uint InHeaderErrors { get; set; }
+        public uint InAddressErrors { get; set; }
+        public uint ForwardedDatagrams { get; set; }
+        public uint InUnknownProtocols { get; set; }
+        public uint InDiscards { get; set; }
+        public uint InDelivers { get; set; }
         public RequestsStatus OutRequests { get; set; }
-        public int RoutingDiscards { get; set; }
-        public int OutDiscards { get; set; }
-        public int OutNoRoutes { get; set; }
-        public int ReassemblyTimeout { get; set; }
+        public uint RoutingDiscards { get; set; }
+        public uint OutDiscards { get; set; }
+        public uint OutNoRoutes { get; set; }
+        public uint NumberOfInterfaces { get; set; }
+        public uint ReassemblyTimeout { get; set; }
         public RequestsStatus ReassemblyRequests { get; set; }
-        public int ReassemblyOks { get; set; }
-        public int ReassemblyFails { get; set; }
-        public int FragmentOks { get; set; }
-        public int FragmentFails { get; set; }
-        public int FragmentCreates { get; set; }
-        public int NumberOfInterfaces { get; set; }
-        public int NumberOfAddresses { get; set; }
-        public int NumberOfRoutes { get; set; }
+        public uint ReassemblyOks { get; set; }
+        public uint ReassemblyFails { get; set; }
+        public uint FragmentOks { get; set; }
+        public uint FragmentFails { get; set; }
+        public uint FragmentCreates { get; set; }
+        public uint NumberOfAddresses { get; set; }
+        public uint NumberOfRoutes { get; set; }
     }
 }

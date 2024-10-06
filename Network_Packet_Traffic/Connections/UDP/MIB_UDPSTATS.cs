@@ -5,10 +5,10 @@ namespace Network_Packet_Traffic.Connections.UDP
     [StructLayout(LayoutKind.Sequential)]
     public struct MIB_UDPSTATS
     {
-        public int dwInDatagrams;
-        public int dwNoPorts;
-        public int dwInErrors;
-        public int dwOutDatagrams;
-        public int dwNumAddrs;
+        public uint dwInDatagrams;
+        public uint dwNoPorts;
+        public uint dwInErrors;
+        public uint dwOutDatagrams;
+        public uint dwNumAddrs;
     }
 }

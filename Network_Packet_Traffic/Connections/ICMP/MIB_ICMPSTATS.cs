@@ -8,19 +8,19 @@ namespace Network_Packet_Traffic.Connections.ICMP
     [StructLayout(LayoutKind.Sequential)]
     public struct MIB_ICMPSTATS
     {
-        public int dwMsgs;             // Total number of ICMP messages
-        public int dwErrors;           // Total number of errors
-        public int dwDestUnreachs;     // Number of destination unreachable messages
-        public int dwTimeExcds;        // Number of time exceeded messages
-        public int dwParmProbs;        // Number of parameter problems
-        public int dwSrcQuenchs;       // Number of source quench messages
-        public int dwRedirects;        // Number of redirects
-        public int dwEchos;            // Number of echo requests
-        public int dwEchoReps;         // Number of echo replies
-        public int dwTimestamps;       // Number of timestamp requests
-        public int dwTimestampReps;    // Number of timestamp replies
-        public int dwAddrMasks;        // Number of address mask requests
-        public int dwAddrMaskReps;     // Number of address mask replies
+        public uint dwMsgs;             // Total number of ICMP messages
+        public uint dwErrors;           // Total number of errors
+        public uint dwDestUnreachs;     // Number of destination unreachable messages
+        public uint dwTimeExcds;        // Number of time exceeded messages
+        public uint dwParmProbs;        // Number of parameter problems
+        public uint dwSrcQuenchs;       // Number of source quench messages
+        public uint dwRedirects;        // Number of redirects
+        public uint dwEchos;            // Number of echo requests
+        public uint dwEchoReps;         // Number of echo replies
+        public uint dwTimestamps;       // Number of timestamp requests
+        public uint dwTimestampReps;    // Number of timestamp replies
+        public uint dwAddrMasks;        // Number of address mask requests
+        public uint dwAddrMaskReps;     // Number of address mask replies
     }
 
 
@@ -30,21 +30,21 @@ namespace Network_Packet_Traffic.Connections.ICMP
     [StructLayout(LayoutKind.Sequential)]
     public struct MIB_ICMPSTATS_EX
     {
-        public int dwMsgs;              // Number of messages
-        public int dwErrors;            // Number of errors
-        public int dwDestUnreachs;      // Number of destination unreachable messages
-        public int dwTimeExcds;         // Number of time exceeded messages
-        public int dwParmProbs;          // Number of parameter problem messages
-        public int dwSrcQuenchs;         // Number of source quench messages
-        public int dwRedirects;          // Number of redirects
-        public int dwEchos;              // Number of echo requests
-        public int dwEchoReps;           // Number of echo replies
-        public int dwTimestamps;         // Number of timestamp requests
-        public int dwTimestampReps;      // Number of timestamp replies
-        public int dwAddrMasks;          // Number of address mask requests
-        public int dwAddrMaskReps;       // Number of address mask replies
-        public int dwInfoRequests;       // Number of info requests
-        public int dwInfoReps;           // Number of info replies
+        public uint dwMsgs;              // Number of messages
+        public uint dwErrors;            // Number of errors
+        public uint dwDestUnreachs;      // Number of destination unreachable messages
+        public uint dwTimeExcds;         // Number of time exceeded messages
+        public uint dwParmProbs;          // Number of parameter problem messages
+        public uint dwSrcQuenchs;         // Number of source quench messages
+        public uint dwRedirects;          // Number of redirects
+        public uint dwEchos;              // Number of echo requests
+        public uint dwEchoReps;           // Number of echo replies
+        public uint dwTimestamps;         // Number of timestamp requests
+        public uint dwTimestampReps;      // Number of timestamp replies
+        public uint dwAddrMasks;          // Number of address mask requests
+        public uint dwAddrMaskReps;       // Number of address mask replies
+        public uint dwInfoRequests;       // Number of info requests
+        public uint dwInfoReps;           // Number of info replies
     }
 
 }

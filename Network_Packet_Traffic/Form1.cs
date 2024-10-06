@@ -91,6 +91,7 @@ namespace Network_Packet_Traffic
                 packet.LocalPort.ToString(),
                 packet.RemoteAddress.ToString(),
                 packet.RemotePort.ToString(),
+                packet.MacAddress,
                 packet.Protocol.ToString(),
                 packet.State.ToString(),
                 NetHelper.GetProcessName((int)packet.ProcessId)
@@ -149,9 +150,10 @@ namespace Network_Packet_Traffic
                 i.SubItems[2].Text == packet.LocalPort.ToString() &&
                 i.SubItems[3].Text == packet.RemoteAddress.ToString() &&
                 i.SubItems[4].Text == packet.RemotePort.ToString() &&
-                i.SubItems[5].Text == packet.Protocol.ToString() &&
-                i.SubItems[6].Text == packet.State.ToString() &&
-                i.SubItems[7].Text == NetHelper.GetProcessName((int)packet.ProcessId));
+                i.SubItems[5].Text == packet.MacAddress &&
+                i.SubItems[6].Text == packet.Protocol.ToString() &&
+                i.SubItems[7].Text == packet.State.ToString() &&
+                i.SubItems[8].Text == NetHelper.GetProcessName((int)packet.ProcessId));
 
             if (itemToRemove != null)
             {

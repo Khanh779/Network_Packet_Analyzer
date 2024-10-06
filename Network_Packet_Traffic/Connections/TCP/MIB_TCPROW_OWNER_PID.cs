@@ -7,9 +7,9 @@ namespace Network_Packet_Traffic.Connections.TCP
     {
         public uint dwState;
         public uint dwLocalAddr;
-        public int dwLocalPort;
+        public uint dwLocalPort;
         public uint dwRemoteAddr;
-        public int dwRemotePort;
-        public int dwOwningPid;
+        public uint dwRemotePort;
+        public uint dwOwningPid;
     }
 }

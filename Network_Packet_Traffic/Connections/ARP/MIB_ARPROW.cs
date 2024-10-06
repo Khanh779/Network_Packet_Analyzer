@@ -1,4 +1,4 @@
-﻿using Network_Packet_Traffic.Connections.Enums;
+﻿using Network_Packet_Traffic.Connections.IPNET;
 using System.Net;
 
 namespace Network_Packet_Traffic.Connections.ARP

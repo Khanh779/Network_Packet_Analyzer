@@ -5,28 +5,28 @@ namespace Network_Packet_Traffic.Connections.IPNET
     [StructLayout(LayoutKind.Sequential)]
     public struct MIB_IPSTATS
     {
-        public int dwForwarding;
-        public int dwDefaultTTL;
-        public int dwInReceives;
-        public int dwInHdrErrors;
-        public int dwInAddrErrors;
-        public int dwForwDatagrams;
-        public int dwInUnknownProtos;
-        public int dwInDiscards;
-        public int dwInDelivers;
-        public int dwOutRequests;
-        public int dwRoutingDiscards;
-        public int dwOutDiscards;
-        public int dwOutNoRoutes;
-        public int dwReasmTimeout;
-        public int dwReasmReqds;
-        public int dwReasmOks;
-        public int dwReasmFails;
-        public int dwFragOks;
-        public int dwFragFails;
-        public int dwFragCreates;
-        public int dwNumIf;
-        public int dwNumAddr;
-        public int dwNumRoutes;
+        public uint dwForwarding;
+        public uint dwDefaultTTL;
+        public uint dwInReceives;
+        public uint dwInHdrErrors;
+        public uint dwInAddrErrors;
+        public uint dwForwDatagrams;
+        public uint dwInUnknownProtos;
+        public uint dwInDiscards;
+        public uint dwInDelivers;
+        public uint dwOutRequests;
+        public uint dwRoutingDiscards;
+        public uint dwOutDiscards;
+        public uint dwOutNoRoutes;
+        public uint dwReasmTimeout;
+        public uint dwReasmReqds;
+        public uint dwReasmOks;
+        public uint dwReasmFails;
+        public uint dwFragOks;
+        public uint dwFragFails;
+        public uint dwFragCreates;
+        public uint dwNumIf;
+        public uint dwNumAddr;
+        public uint dwNumRoutes;
     }
 }
