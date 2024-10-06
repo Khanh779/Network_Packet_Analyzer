@@ -23,7 +23,8 @@ namespace Network_Packet_Traffic
             this.columnHeaderLocalPort = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderRemoteAddress = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderRemotePort = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeaderProtocol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.CH_MAC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));  // Thêm cột MAC Address
+            this.columnHeaderProtocol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader())); // Cột Protocol được chuyển sau MAC Address
             this.columnHeaderState = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderProcName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.labelFilter = new System.Windows.Forms.Label();
@@ -35,18 +36,19 @@ namespace Network_Packet_Traffic
             // 
             // listViewConnections
             // 
-            this.listViewConnections.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.listViewConnections.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listViewConnections.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeaderID,
-            this.columnHeaderLocalAddress,
-            this.columnHeaderLocalPort,
-            this.columnHeaderRemoteAddress,
-            this.columnHeaderRemotePort,
-            this.columnHeaderProtocol,
-            this.columnHeaderState,
-            this.columnHeaderProcName});
+        this.columnHeaderID,
+        this.columnHeaderLocalAddress,
+        this.columnHeaderLocalPort,
+        this.columnHeaderRemoteAddress,
+        this.columnHeaderRemotePort,
+        this.CH_MAC,                   // Cột MAC Address được thêm vào đây
+        this.columnHeaderProtocol,     // Cột Protocol được di chuyển sau cột MAC
+        this.columnHeaderState,
+        this.columnHeaderProcName});
             this.listViewConnections.FullRowSelect = true;
             this.listViewConnections.GridLines = true;
             this.listViewConnections.HideSelection = false;
@@ -82,8 +84,13 @@ namespace Network_Packet_Traffic
             this.columnHeaderRemotePort.Text = "Remote Port";
             this.columnHeaderRemotePort.Width = 80;
             // 
-            // columnHeaderProtocol
+            // CH_MAC
             // 
+            this.CH_MAC.Text = "MAC Address";
+            this.CH_MAC.Width = 150; // Điều chỉnh kích thước của cột MAC Address
+                                     // 
+                                     // columnHeaderProtocol
+                                     // 
             this.columnHeaderProtocol.Text = "Protocol";
             this.columnHeaderProtocol.Width = 100;
             // 
@@ -118,7 +125,7 @@ namespace Network_Packet_Traffic
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel});
+        this.toolStripStatusLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 376);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(665, 22);
@@ -146,7 +153,6 @@ namespace Network_Packet_Traffic
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         private ListView listViewConnections;
@@ -162,5 +168,6 @@ namespace Network_Packet_Traffic
         private ComboBox comboBoxStateFilter;
         private StatusStrip statusStrip;
         private ToolStripStatusLabel toolStripStatusLabel;
+        private ColumnHeader CH_MAC;
     }
 }

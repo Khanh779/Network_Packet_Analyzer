@@ -9,6 +9,7 @@ namespace Network_Packet_Traffic.Connections.Structs
         public string MacAddress;
         public int LocalPort;
         public IPAddress RemoteAddress;
+        public string MACAddress;
         public int RemotePort;
         public int ProcessId;
         public StateType State;

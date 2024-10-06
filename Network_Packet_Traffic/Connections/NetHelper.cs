@@ -194,5 +194,21 @@ namespace Network_Packet_Traffic.Connections
             // Create and return an IPAddress object using the byte array
             return new IPAddress(ipBytes);
         }
+
+        /// <summary>
+        /// Converts a integer representation of an MAC address to a string.
+        /// </summary>
+        public static string ConvertMacAddress(byte[] macAddress)
+        {
+            StringBuilder macAddressString = new StringBuilder();
+            for (int i = 0; i < macAddress.Length; i++)
+            {
+                if (i > 0)
+                    macAddressString.Append(":");
+                macAddressString.AppendFormat("{0:X2}", macAddress[i]);
+            }
+
+            return macAddressString.ToString();
+        }
     }
 }

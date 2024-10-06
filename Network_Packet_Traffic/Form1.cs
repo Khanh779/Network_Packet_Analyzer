@@ -56,7 +56,10 @@ namespace Network_Packet_Traffic
 
                     if (!listViewConnections.Items.Contains(newItem))
                     {
-                        listViewConnections.Items.Add(newItem);
+                        listViewConnections.Invoke((Action)(() =>
+                        {
+                            listViewConnections.Items.Add(newItem);
+                        }));
                     }
                 }
             }

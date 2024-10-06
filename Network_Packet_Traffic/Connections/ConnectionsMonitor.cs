@@ -6,6 +6,7 @@ using Network_Packet_Traffic.Connections.TCP;
 using Network_Packet_Traffic.Connections.UDP;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using static Network_Packet_Traffic.Connections.NetHelper;
 
@@ -129,8 +130,8 @@ namespace Network_Packet_Traffic.Connections
                 {
                     LocalAddress = ConvertIpAddress((int)udpRow.dwLocalAddr),
                     LocalPort = udpRow.dwLocalPort,
-                    RemoteAddress = ConvertIpAddress((int)udpRow.dwRemoteAddr),
-                    RemotePort = udpRow.dwRemotePort,
+                    RemoteAddress = new System.Net.IPAddress(0), // UDP typically has no remote address for listening sockets
+                    RemotePort = 0, // Same for remote port
                     State = GetState(-1),
                     ProcessId = udpRow.dwOwningPid,
                     Protocol = ProtocolType.UDP
@@ -141,12 +142,13 @@ namespace Network_Packet_Traffic.Connections
             // Populate IPNET (ARP-like) connection data
             for (int i = 0; i < ipNetTable.dwNumEntries; i++)
             {
-                MIB_IPNETROW arpRow = ipNetTable.table[i];
+                MIB_IPNETROW ipnetRow = ipNetTable.table[i];
                 PacketConnectionInfo packet = new PacketConnectionInfo
                 {
-                    LocalAddress = ConvertIpAddress(arpRow.dwAddr),
+                    LocalAddress = ConvertIpAddress(ipnetRow.dwAddr),
                     LocalPort = 0,
-                    RemoteAddress = ConvertIpAddress(arpRow.dwPhysAddrLen),
+                    RemoteAddress = IPAddress.None, // Changed to correctly map to MAC address,
+                    MACAddress = ConvertMacAddress(ipnetRow.bPhysAddr),
                     RemotePort = 0,
                     State = GetState(-1),
                     ProcessId = 0,
@@ -165,6 +167,7 @@ namespace Network_Packet_Traffic.Connections
                     LocalPort = 0,
                     MacAddress = arpRow.PhysicalAddress.ToString(),
                     RemoteAddress = new System.Net.IPAddress(0),
+                    MACAddress = ConvertMacAddress(arpRow.PhysicalAddress),
                     RemotePort = 0,
                     State = GetState(-1),
                     ProcessId = 0,
@@ -172,9 +175,9 @@ namespace Network_Packet_Traffic.Connections
                 };
                 packetConnectionInfos[i + tcpTable.dwNumEntries + udpTable.dwNumEntries + ipNetTable.dwNumEntries] = packet;
             }
+
             return packetConnectionInfos.ToList();
         }
-
 
         #region Connection Monitoring
 
@@ -185,7 +188,6 @@ namespace Network_Packet_Traffic.Connections
         {
             do
             {
-
                 PacketConnectionInfo[] packetConnectionInfos = GetPacketConnections().ToArray();
 
                 // Trigger the event for loading new packet connections
@@ -209,11 +211,16 @@ namespace Network_Packet_Traffic.Connections
                 }
 
                 Thread.Sleep(Interval);
-                _previousPackets = packetConnectionInfos;
+
+                // Make a copy to avoid reference issues
+                _previousPackets = packetConnectionInfos.ToArray();
             }
             while (IsAutoReload);
         }
 
         #endregion
+
+
+
     }
 }

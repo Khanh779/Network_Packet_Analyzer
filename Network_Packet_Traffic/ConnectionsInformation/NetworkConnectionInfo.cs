@@ -13,7 +13,7 @@ namespace NetworkPacketTraffic.ConnectionsInformation
         private IPGlobalStatistics _ipv6Statistics;
 
         private NetworkInterface[] _networkInterfaces;
-        private IPInterfaceStatistics _interfaceStatistics;
+        //private IPInterfaceStatistics _interfaceStatistics;
 
         private TcpStatistics _tcpIPv4Statistics;
         private TcpStatistics _tcpIPv6Statistics;
