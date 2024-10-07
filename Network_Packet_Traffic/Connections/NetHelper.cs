@@ -40,7 +40,7 @@ namespace Network_Packet_Traffic.Connections
         [DllImport("Ws2_32.dll")]
         public static extern Int32 inet_addr(string ip);
 
-       
+   
 
         /// <summary>
         /// Retrieves the error message description for a specified API error number.
@@ -154,6 +154,34 @@ namespace Network_Packet_Traffic.Connections
 
             // Create and return an IPAddress object using the byte array
             return new IPAddress(ipBytes);
+        }
+
+        /// <summary>
+        /// Get the IP address from a string.
+        /// </summary>
+        /// <param name="ipAddress">The IP address in string format.</param>
+        /// <returns>An IPAddress object if the conversion is successful; otherwise, null.</returns>
+        /// <exception cref="FormatException">Thrown when the string is not a valid IP address format.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when the input string is null.</exception>
+        public static IPAddress ConvertFromStringToIPAddress(string ipAddress)
+        {
+            // Check if the input string is null or empty
+            if (string.IsNullOrWhiteSpace(ipAddress))
+            {
+                throw new ArgumentNullException(nameof(ipAddress), "IP address string cannot be null or empty.");
+            }
+
+            try
+            {
+                // Convert the string IP address to an IPAddress object
+                return IPAddress.Parse(ipAddress);
+            }
+            catch (FormatException)
+            {
+                // Handle format exception for invalid IP address format
+                Console.WriteLine($"Error: '{ipAddress}' is not a valid IP address format.");
+                return null; // Optionally, return null or throw the exception based on your preference
+            }
         }
 
         /// <summary>

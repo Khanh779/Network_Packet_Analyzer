@@ -35,7 +35,7 @@ namespace Network_Packet_Traffic
         private void InitializeConnectionsMonitor()
         {
             connectionsMonitor = new ConnectionsMonitor(true);
-            //connectionsMonitor.NewPacketsConnectionLoad += UpdateListView;
+            connectionsMonitor.NewPacketsConnectionLoad += UpdateListView;
             connectionsMonitor.NewPacketConnectionStarted += OnPacketConnectionStarted;
             connectionsMonitor.NewPacketConnectionEnded += OnPacketConnectionEnded;
             connectionsMonitor.StartListening();

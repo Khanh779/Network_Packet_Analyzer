@@ -57,6 +57,8 @@
     <Compile Include="Connections\ARP\MIB_ARPSTATS.cs" />
     <Compile Include="Connections\ARP\MIB_ARPTABLE.cs" />
     <Compile Include="Connections\ARP\RequestsStatus.cs" />
+    <Compile Include="Connections\DNS\DNS_Info.cs" />
+    <Compile Include="Connections\DNS\DNS_Record.cs" />
     <Compile Include="Connections\Enums\ProtocolFilter.cs" />
     <Compile Include="Connections\ICMP\ICMPEntry.cs" />
     <Compile Include="Connections\ICMP\MIB_ICMPENTRY.cs" />
@@ -119,7 +121,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Connections\DHCP\" />
-    <Folder Include="Connections\DNS\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

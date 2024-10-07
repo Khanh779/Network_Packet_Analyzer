@@ -25,12 +25,14 @@ namespace Network_Packet_Traffic.Connections.IPNET
             {
                 result = GetIpNetTable(buffer, ref bufferSize, false);
                 if (result != 0) throw new System.ComponentModel.Win32Exception(result); // 0 is NO_ERROR
-                int entryCount = (int)Marshal.ReadIntPtr(buffer); // Get the number of entries in the table
-                IntPtr currentBuffer = (IntPtr)((long)buffer + Marshal.SizeOf(typeof(int)));
-                var temp = new MIB_IPNETROW[entryCount];
+
+                arpTable.dwNumEntries = (uint)Marshal.ReadIntPtr(buffer); // Get the number of entries in the table
+                IntPtr currentBuffer = (IntPtr)((long)buffer + Marshal.SizeOf(typeof(uint)));
+
+                var temp = new MIB_IPNETROW[arpTable.dwNumEntries];
 
                 // Lặp qua từng dòng trong bảng ARP
-                for (int i = 0; i < entryCount; i++)
+                for (int i = 0; i < temp.Length; i++)
                 {
                     temp[i] = (MIB_IPNETROW)Marshal.PtrToStructure(currentBuffer, typeof(MIB_IPNETROW));
 
