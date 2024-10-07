@@ -1,5 +1,5 @@
 # Network_Packet_Traffic
-A network traffic monitoring application that captures and displays packet connections.
+The "Network Packet Traffic" project is a network traffic monitoring and packet analysis tool that captures, analyzes, and displays information about data packets transmitted over the network.
 
 ## Features
 - Analyze and display detailed network packet information.
