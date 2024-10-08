@@ -1,13 +1,13 @@
-﻿using Network_Packet_Traffic.Connections.Enums;
-using Network_Packet_Traffic.Connections.IPNET;
+﻿using Network_Packet_Analyzer.Connections.Enums;
+using Network_Packet_Analyzer.Connections.IPNET;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Windows.Forms;
-using static Network_Packet_Traffic.Connections.NetHelper;
+using static Network_Packet_Analyzer.Connections.NetHelper;
 
-namespace Network_Packet_Traffic.Connections.ARP
+namespace Network_Packet_Analyzer.Connections.ARP
 {
     public class ARP_Info
     {

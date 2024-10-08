@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace Network_Packet_Traffic.Connections.DNS
+namespace Network_Packet_Analyzer.Connections.DNS
 {
     public class DNS_Info
     {

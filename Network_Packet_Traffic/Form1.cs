@@ -1,12 +1,13 @@
-﻿using Network_Packet_Traffic.Connections;
-using Network_Packet_Traffic.Connections.Enums;
-using Network_Packet_Traffic.Connections.Structs;
+﻿using Network_Packet_Analyzer.Connections;
+using Network_Packet_Analyzer.Connections.Enums;
+using Network_Packet_Analyzer.Connections.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using static System.Windows.Forms.ListView;
 
-namespace Network_Packet_Traffic
+namespace Network_Packet_Analyzer
 {
     public partial class Form1 : Form
     {
@@ -24,25 +25,33 @@ namespace Network_Packet_Traffic
         private void Form1_Load(object sender, EventArgs e)
         {
             InitializeConnectionsMonitor();
-          
+
         }
 
 
         void AddComlumnsToListView()
         {
-            listViewConnections.SuspendLayout();
-            listViewConnections.Columns.Add("Local Address", 100);
-            listViewConnections.Columns.Add("Local Port", 70);
-            listViewConnections.Columns.Add("Remote Address", 100);
-            listViewConnections.Columns.Add("Remote Port", 75);
-            listViewConnections.Columns.Add("MAC Address", 100);
-            listViewConnections.Columns.Add("Protocol", 60);
-            listViewConnections.Columns.Add("State", 50);
-            listViewConnections.Columns.Add("Process ID", 60);
-            listViewConnections.Columns.Add("Process Name", 100);
-            listViewConnections.ResumeLayout();
-            listViewConnections.PerformLayout();
+            var columns = new[]
+            {
+                new ColumnHeader { Text = "Local Address", Width = 100 },
+                new ColumnHeader { Text = "Local Port", Width = 60 },
+                new ColumnHeader { Text = "Remote Address", Width = 100 },
+                new ColumnHeader { Text = "Remote Port", Width = 75 },
+                new ColumnHeader { Text = "MAC Address", Width = 100 },
+                new ColumnHeader { Text = "Protocol", Width = 60 },
+                new ColumnHeader { Text = "State", Width = 70 },
+                new ColumnHeader { Text = "Process ID", Width = 70 },
+                new ColumnHeader { Text = "Process Name", Width = 100 }
+            };
+
+            listViewConnections.Columns.AddRange(columns);
+
+            //listViewConnections.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize); // Auto resize columns to fit the content
+
+            listViewConnections.Scrollable = true;
+            listViewConnections.AutoResizeColumns(ColumnHeaderAutoResizeStyle.None);
         }
+
 
 
         private void InitializeConnectionsMonitor()
@@ -56,7 +65,7 @@ namespace Network_Packet_Traffic
 
         private void UpdateListView(object sender, PacketConnectionInfo[] packets)
         {
-           
+
         }
 
 
@@ -97,7 +106,7 @@ namespace Network_Packet_Traffic
             {
                 statusStrip.Invoke((Action)(() =>
                 {
-                   // toolStripStatusLabel.Text = $"Total Connections: {listViewConnections.Items.Count}";
+                    // toolStripStatusLabel.Text = $"Total Connections: {listViewConnections.Items.Count}";
                 }));
             }
 
@@ -105,12 +114,12 @@ namespace Network_Packet_Traffic
 
         private void OnPacketConnectionStarted(object sender, PacketConnectionInfo packet)
         {
-            
+
         }
 
         private void OnPacketConnectionEnded(object sender, PacketConnectionInfo packet)
         {
-           
+
         }
     }
 }

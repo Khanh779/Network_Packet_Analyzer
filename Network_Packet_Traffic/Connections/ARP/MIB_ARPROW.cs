@@ -1,8 +1,8 @@
-﻿using Network_Packet_Traffic.Connections.ARP;
+﻿using Network_Packet_Analyzer.Connections.ARP;
 using System.Net;
 using System.Runtime.InteropServices;
 
-namespace Network_Packet_Traffic.Connections.ARP
+namespace Network_Packet_Analyzer.Connections.ARP
 {
 
 

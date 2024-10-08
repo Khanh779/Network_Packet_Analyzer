@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Network_Packet_Traffic.Connections.Enums
+namespace Network_Packet_Analyzer.Connections.Enums
 {
     /// <summary>
     /// Enum used to define the filtering options for network protocols in the application.

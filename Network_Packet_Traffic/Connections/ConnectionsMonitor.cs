@@ -1,17 +1,17 @@
-﻿using Network_Packet_Traffic.Connections.ARP;
-using Network_Packet_Traffic.Connections.Enums;
-using Network_Packet_Traffic.Connections.IPNET;
-using Network_Packet_Traffic.Connections.Structs;
-using Network_Packet_Traffic.Connections.TCP;
-using Network_Packet_Traffic.Connections.UDP;
+﻿using Network_Packet_Analyzer.Connections.ARP;
+using Network_Packet_Analyzer.Connections.Enums;
+using Network_Packet_Analyzer.Connections.IPNET;
+using Network_Packet_Analyzer.Connections.Structs;
+using Network_Packet_Analyzer.Connections.TCP;
+using Network_Packet_Analyzer.Connections.UDP;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Windows.Forms;
-using static Network_Packet_Traffic.Connections.NetHelper;
+using static Network_Packet_Analyzer.Connections.NetHelper;
 
-namespace Network_Packet_Traffic.Connections
+namespace Network_Packet_Analyzer.Connections
 {
     /// <summary>
     /// Delegate for handling the event when a new packet connection load occurs.

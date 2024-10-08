@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Network_Packet_Traffic.Connections.ARP
+namespace Network_Packet_Analyzer.Connections.ARP
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct MIB_ARPTABLE

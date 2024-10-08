@@ -1,4 +1,4 @@
-﻿namespace Network_Packet_Traffic.Connections.ARP
+﻿namespace Network_Packet_Analyzer.Connections.ARP
 {
     public struct MIB_ARPSTATS
     {

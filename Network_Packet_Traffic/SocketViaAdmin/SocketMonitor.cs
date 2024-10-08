@@ -4,9 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using static Network_Packet_Traffic.SocketViaAdmin.SocketMonitor;
+using static Network_Packet_Analyzer.SocketViaAdmin.SocketMonitor;
 
-namespace Network_Packet_Traffic.SocketViaAdmin
+namespace Network_Packet_Analyzer.SocketViaAdmin
 {
     /// <summary>
     /// Structure representing the IP header of a packet.

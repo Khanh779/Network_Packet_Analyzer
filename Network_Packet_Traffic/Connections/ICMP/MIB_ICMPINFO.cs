@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Network_Packet_Traffic.Connections.ICMP
+namespace Network_Packet_Analyzer.Connections.ICMP
 {
     /// <summary>
     /// Represents the ICMP information structure containing both incoming and outgoing statistics.

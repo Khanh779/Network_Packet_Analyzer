@@ -1,4 +1,4 @@
-﻿using Network_Packet_Traffic.Connections.Enums;
+﻿using Network_Packet_Analyzer.Connections.Enums;
 using System;
 using System.Diagnostics;
 using System.Net;
@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Network_Packet_Traffic.Connections
+namespace Network_Packet_Analyzer.Connections
 {
     public static class NetHelper
     {

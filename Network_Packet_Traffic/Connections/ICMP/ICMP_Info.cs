@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Network_Packet_Traffic.Connections.ICMP
+namespace Network_Packet_Analyzer.Connections.ICMP
 {
     /// <summary>
     /// Class to handle ICMP statistics retrieval and management.

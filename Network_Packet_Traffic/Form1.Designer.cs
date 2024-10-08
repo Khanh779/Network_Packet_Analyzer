@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Network_Packet_Traffic
+namespace Network_Packet_Analyzer
 {
     partial class Form1 : Form
     {
@@ -216,7 +216,9 @@ namespace Network_Packet_Traffic
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.tab_Home);
             this.tabControl.Controls.Add(this.tab_ListMonitor);
+            this.tabControl.ItemSize = new System.Drawing.Size(58, 18);
             this.tabControl.Location = new System.Drawing.Point(5, 27);
+            this.tabControl.Multiline = true;
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(671, 391);
@@ -227,7 +229,7 @@ namespace Network_Packet_Traffic
             this.tab_Home.BackColor = System.Drawing.Color.White;
             this.tab_Home.Location = new System.Drawing.Point(4, 22);
             this.tab_Home.Name = "tab_Home";
-            this.tab_Home.Size = new System.Drawing.Size(622, 348);
+            this.tab_Home.Size = new System.Drawing.Size(663, 365);
             this.tab_Home.TabIndex = 0;
             this.tab_Home.Text = "Home";
             // 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Network_Packet_Traffic.Connections.IPNET
+namespace Network_Packet_Analyzer.Connections.IPNET
 {
     public class IPNET_Info
     {

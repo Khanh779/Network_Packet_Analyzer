@@ -1,4 +1,4 @@
-﻿namespace Network_Packet_Traffic.Connections.Enums
+﻿namespace Network_Packet_Analyzer.Connections.Enums
 {
     /// <summary>
     /// Enumeration representing the various states of a TCP connection.

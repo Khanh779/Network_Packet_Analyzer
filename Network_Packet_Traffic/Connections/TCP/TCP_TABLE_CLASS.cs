@@ -1,4 +1,4 @@
-﻿namespace Network_Packet_Traffic.Connections.TCP
+﻿namespace Network_Packet_Analyzer.Connections.TCP
 {
     public enum TCP_TABLE_CLASS
     {
