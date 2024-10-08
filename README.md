@@ -3,7 +3,7 @@ The "Network Packet Traffic" project is a network traffic monitoring and packet 
 
 ## Features
 - Analyze and display detailed network packet information.
-- Support for TCP, UDP, and ARP protocols.
+- Support for TCP, UDP, ARP, IP, ICMP, DHCP, DNS protocols.
 - Real-time monitoring of active and closed connections.
 - Events for new and ended connections.
 
