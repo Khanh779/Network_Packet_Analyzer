@@ -45,7 +45,7 @@ namespace Network_Packet_Traffic.Connections
         /// </summary>
         public event NewPacketConnectionEndedHandler NewPacketConnectionEnded;
 
-        private PacketConnectionInfo[] _previousPackets = new PacketConnectionInfo[0];
+        private HashSet<PacketConnectionInfo> _previousPackets = new HashSet<PacketConnectionInfo>();
         private Thread _monitorThread = null;
 
         /// <summary>
@@ -98,9 +98,9 @@ namespace Network_Packet_Traffic.Connections
         public ProtocolFilter ProtocolFilter { get; set; } = ProtocolFilter.All;
 
 
-        List<PacketConnectionInfo> GetBasePacket(ProtocolFilter protocolFilter = ProtocolFilter.All)
+        HashSet<PacketConnectionInfo> GetBasePacket(ProtocolFilter protocolFilter = ProtocolFilter.All)
         {
-            List<PacketConnectionInfo> packetConnectionInfos = new List<PacketConnectionInfo>();
+            HashSet<PacketConnectionInfo> packetConnectionInfos = new HashSet<PacketConnectionInfo>();
 
             // Avoid loading unnecessary data based on the protocol filter
             if (protocolFilter == ProtocolFilter.All || protocolFilter == ProtocolFilter.TCP)
@@ -155,7 +155,7 @@ namespace Network_Packet_Traffic.Connections
                         LocalAddress = ConvertIpAddress(ipnetRow.dwAddr),
                         LocalPort = 0,
                         RemoteAddress = IPAddress.None, // No remote address, mapping to MAC address
-                        MACAddress = ConvertMacAddress(ipnetRow.bPhysAddr),
+                        MacAddress = ConvertMacAddress(ipnetRow.bPhysAddr),
                         RemotePort = 0,
                         State = GetState(-1),
                         ProcessId = 0,
@@ -195,7 +195,7 @@ namespace Network_Packet_Traffic.Connections
         /// <returns>List of <see cref="PacketConnectionInfo"/> based on the protocol filter.</returns>
         public List<PacketConnectionInfo> GetPacketConnections(ProtocolFilter protocolFilter)
         {
-            return GetBasePacket(protocolFilter);
+            return GetBasePacket(protocolFilter).ToList();
         }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace Network_Packet_Traffic.Connections
         /// <returns>List of <see cref="PacketConnectionInfo"/> for all protocols.</returns>
         public List<PacketConnectionInfo> GetPacketConnections()
         {
-            return GetBasePacket(ProtocolFilter.All);
+            return GetBasePacket(ProtocolFilter.All).ToList();
         }
 
 
@@ -216,37 +216,34 @@ namespace Network_Packet_Traffic.Connections
         /// </summary>
         private void MonitorPacketConnections()
         {
-            do
+            while (IsAutoReload)
             {
-                PacketConnectionInfo[] packetConnectionInfos = GetBasePacket(ProtocolFilter).ToArray();
+                HashSet<PacketConnectionInfo> packetConnectionInfos = GetBasePacket(ProtocolFilter);
 
-                // Trigger the event for loading new packet connections
-                NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos);
-
-                // Check and trigger events for new and ended connections
+                // Trigger event for all new packets
                 foreach (var packet in packetConnectionInfos)
                 {
-                    if (!_previousPackets.Contains(packet))
+                    if (_previousPackets.Add(packet))
                     {
                         NewPacketConnectionStarted?.Invoke(this, packet);
                     }
                 }
 
-                foreach (var oldPacket in _previousPackets)
+                // Check for disconnected packets
+                var disconnectedPackets = _previousPackets.Where(oldPacket => !packetConnectionInfos.Contains(oldPacket)).ToList();
+                foreach (var oldPacket in disconnectedPackets)
                 {
-                    if (!packetConnectionInfos.Contains(oldPacket))
-                    {
-                        NewPacketConnectionEnded?.Invoke(this, oldPacket);
-                    }
+                    NewPacketConnectionEnded?.Invoke(this, oldPacket);
+                    _previousPackets.Remove(oldPacket);
                 }
 
-                Thread.Sleep(Interval);
+                // Trigger event for new packets
+                NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos.ToArray());
 
-                // Make a copy to avoid reference issues
-                _previousPackets = packetConnectionInfos.ToArray();
+                Thread.Sleep(Interval);
             }
-            while (IsAutoReload);
         }
+
 
         #endregion
 

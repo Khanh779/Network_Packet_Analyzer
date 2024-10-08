@@ -10,8 +10,8 @@ namespace <Name_Space>
         {
             // Use the DNS_Info class
             Console.WriteLine("Resolving DNS Information:");
-            DNS_Info dnsInfo = new DNS_Info("8.8.8.8"); // Địa chỉ IP của máy chủ DNS (Google DNS)
-            dnsInfo.ResolveDnsFromIp("8.8.8.8"); // Truy vấn DNS từ IP
+            DNS_Info dnsInfo = new DNS_Info("8.8.8.8"); // IP Address of the DNS Server (Google DNS)
+            dnsInfo.ResolveDnsFromIp("8.8.8.8"); // Query the DNS Server for its own information
             Console.WriteLine($"Host Name: {dnsInfo.HostName}");
             Console.WriteLine($"Host Addresses: {string.Join(", ", dnsInfo.GetIpAddresses())}");
             Console.WriteLine($"Response Time: {dnsInfo.ResponseTime}");
@@ -20,8 +20,8 @@ namespace <Name_Space>
 
             // Use the DHCP_Info class
             Console.WriteLine("Requesting DHCP Lease:");
-            DHCP_Info dhcpInfo = new DHCP_Info("192.168.1.1"); // Địa chỉ IP của máy chủ DHCP
-            dhcpInfo.RequestLease("00-14-22-01-23-45"); // Địa chỉ MAC giả định
+            DHCP_Info dhcpInfo = new DHCP_Info("192.168.1.1"); // IP Address of the DHCP Server
+            dhcpInfo.RequestLease("00-14-22-01-23-45"); // Mac Address
             Console.WriteLine($"Assigned IP Address: {dhcpInfo.AssignedIPAddress}");
             Console.WriteLine($"Lease Time: {dhcpInfo.LeaseTime}");
             Console.WriteLine($"Lease Start Time: {dhcpInfo.LeaseStartTime}");
@@ -35,7 +35,7 @@ namespace <Name_Space>
             dhcpInfo.ReleaseLease();
             Console.WriteLine($"After Release - Is Lease Valid: {dhcpInfo.IsLeaseValid}");
 
-            Console.ReadLine(); // Giữ console mở
+            Console.ReadLine(); // 
         }
     }
 }
