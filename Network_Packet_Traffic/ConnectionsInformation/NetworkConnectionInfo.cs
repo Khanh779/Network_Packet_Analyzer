@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.NetworkInformation;
 
-namespace NetworkPacketTraffic.ConnectionsInformation
+namespace Network_Packet_Traffic.ConnectionsInformation
 {
     /// <summary>
     /// This class retrieves various network connection statistics and properties.

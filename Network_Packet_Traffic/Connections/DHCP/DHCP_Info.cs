@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Network_Packet_Analyzer.Connections.DHCP
+namespace Network_Packet_Traffic.Connections.DHCP
 {
     public class DHCP_Info
     {

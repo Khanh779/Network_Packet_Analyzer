@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Network_Packet_Analyzer.Connections.ICMP
+namespace Network_Packet_Traffic.Connections.ICMP
 {
     /// <summary>
     /// Represents a single entry in an ICMP table.

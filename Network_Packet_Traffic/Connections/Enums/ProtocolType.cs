@@ -1,4 +1,4 @@
-﻿namespace Network_Packet_Analyzer.Connections.Enums
+﻿namespace Network_Packet_Traffic.Connections.Enums
 {
     public enum ProtocolType
     {

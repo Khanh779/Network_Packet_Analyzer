@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Network_Packet_Analyzer
+namespace Network_Packet_Traffic
 {
     partial class Form1 : Form
     {

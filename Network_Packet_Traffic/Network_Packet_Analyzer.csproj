@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D2474C21-08A5-4E85-9530-21B88B8359A2}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Network_Packet_Analyzer</RootNamespace>
-    <AssemblyName>Network_Packet_Analyzer</AssemblyName>
+    <RootNamespace>Network_Packet_Traffic</RootNamespace>
+    <AssemblyName>Network_Packet_Traffic</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

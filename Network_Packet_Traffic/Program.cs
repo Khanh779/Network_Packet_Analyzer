@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Network_Packet_Analyzer
+namespace Network_Packet_Traffic
 {
     internal static class Program
     {

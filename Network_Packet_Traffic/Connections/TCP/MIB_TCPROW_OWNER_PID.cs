@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Network_Packet_Analyzer.Connections.TCP
+namespace Network_Packet_Traffic.Connections.TCP
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct MIB_TCPROW_OWNER_PID

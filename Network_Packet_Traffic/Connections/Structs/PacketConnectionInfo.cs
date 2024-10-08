@@ -1,9 +1,9 @@
-﻿using Network_Packet_Analyzer.Connections.DHCP;
-using Network_Packet_Analyzer.Connections.DNS;
-using Network_Packet_Analyzer.Connections.Enums;
+﻿using Network_Packet_Traffic.Connections.DHCP;
+using Network_Packet_Traffic.Connections.DNS;
+using Network_Packet_Traffic.Connections.Enums;
 using System.Net;
 
-namespace Network_Packet_Analyzer.Connections.Structs
+namespace Network_Packet_Traffic.Connections.Structs
 {
     public struct PacketConnectionInfo
     {

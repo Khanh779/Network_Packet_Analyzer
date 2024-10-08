@@ -1,6 +1,6 @@
 ﻿using System;
-using Network_Packet_Analyzer.Connections.DNS;
-using Network_Packet_Analyzer.Connections.DHCP;
+using Network_Packet_Traffic.Connections.DNS;
+using Network_Packet_Traffic.Connections.DHCP;
 
 namespace <Name_Space>
 {

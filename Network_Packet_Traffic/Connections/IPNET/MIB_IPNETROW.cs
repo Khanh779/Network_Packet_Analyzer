@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Network_Packet_Analyzer.Connections.IPNET
+namespace Network_Packet_Traffic.Connections.IPNET
 {
 
 

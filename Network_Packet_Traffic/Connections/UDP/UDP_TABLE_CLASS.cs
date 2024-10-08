@@ -1,4 +1,4 @@
-﻿namespace Network_Packet_Analyzer.Connections.UDP
+﻿namespace Network_Packet_Traffic.Connections.UDP
 {
     public enum UDP_TABLE_CLASS
     {

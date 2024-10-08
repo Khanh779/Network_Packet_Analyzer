@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using static Network_Packet_Analyzer.Connections.NetHelper;
+using static Network_Packet_Traffic.Connections.NetHelper;
 
-namespace Network_Packet_Analyzer.Connections.TCP
+namespace Network_Packet_Traffic.Connections.TCP
 {
     public class TCP_Info
     {

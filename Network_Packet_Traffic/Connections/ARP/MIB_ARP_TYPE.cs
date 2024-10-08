@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Network_Packet_Analyzer.Connections.ARP
+namespace Network_Packet_Traffic.Connections.ARP
 {
     public enum MIB_ARP_TYPE
     {

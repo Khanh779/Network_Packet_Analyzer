@@ -1,4 +1,4 @@
-﻿namespace Network_Packet_Analyzer.Connections.IPNET
+﻿namespace Network_Packet_Traffic.Connections.IPNET
 {
     public enum MIB_IPNET_TYPE : int
     {

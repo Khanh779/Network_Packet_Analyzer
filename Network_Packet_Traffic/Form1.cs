@@ -1,13 +1,13 @@
-﻿using Network_Packet_Analyzer.Connections;
-using Network_Packet_Analyzer.Connections.Enums;
-using Network_Packet_Analyzer.Connections.Structs;
+﻿using Network_Packet_Traffic.Connections;
+using Network_Packet_Traffic.Connections.Enums;
+using Network_Packet_Traffic.Connections.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using static System.Windows.Forms.ListView;
 
-namespace Network_Packet_Analyzer
+namespace Network_Packet_Traffic
 {
     public partial class Form1 : Form
     {

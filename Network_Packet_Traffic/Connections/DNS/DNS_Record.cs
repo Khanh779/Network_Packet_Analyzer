@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Network_Packet_Analyzer.Connections.DNS
+namespace Network_Packet_Traffic.Connections.DNS
 {
     /// <summary>
     /// Class to store information about DNS records
