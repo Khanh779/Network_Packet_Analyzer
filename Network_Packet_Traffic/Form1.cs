@@ -202,6 +202,7 @@ namespace Network_Packet_Traffic
                 tempState = 5;
             else
                 tempState = 0;
+
             connectionsMonitor.ProtocolFilter = (ProtocolFilter)tempState;
 
         }
