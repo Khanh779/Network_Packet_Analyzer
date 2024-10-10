@@ -5,6 +5,12 @@ VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Network_Packet_Traffic", "Network_Packet_Traffic\Network_Packet_Traffic.csproj", "{D2474C21-08A5-4E85-9530-21B88B8359A2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScreenShot", "ScreenShot", "{5DAAB234-7745-4A47-AA21-569A5359CF18}"
+	ProjectSection(SolutionItems) = preProject
+		ScreenShot\Screenshot_0.png = ScreenShot\Screenshot_0.png
+		ScreenShot\Screenshot_1.png = ScreenShot\Screenshot_1.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

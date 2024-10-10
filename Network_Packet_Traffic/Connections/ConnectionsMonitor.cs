@@ -47,6 +47,7 @@ namespace Network_Packet_Traffic.Connections
 
         private HashSet<PacketConnectionInfo> _previousPackets = new HashSet<PacketConnectionInfo>();
         private Thread _monitorThread = null;
+        private ManualResetEvent _pauseEvent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectionsMonitor"/> class.
@@ -55,6 +56,7 @@ namespace Network_Packet_Traffic.Connections
         public ConnectionsMonitor(bool autoReload = true)
         {
             _monitorThread = new Thread(MonitorPacketConnections);
+            _pauseEvent = new ManualResetEvent(true);
             IsAutoReload = autoReload;
             _monitorThread.IsBackground = true;
         }
@@ -74,22 +76,42 @@ namespace Network_Packet_Traffic.Connections
         /// </summary>
         public void StartListening()
         {
-            if (_monitorThread != null && _monitorThread.ThreadState != ThreadState.Running)
-                _monitorThread.Start();
+            if (_monitorThread != null && (_monitorThread.ThreadState != ThreadState.Running || !_monitorThread.IsAlive))
+                _monitorThread?.Start();
         }
 
         /// <summary>
         /// Gets a value indicating whether the monitor is currently running.
         /// </summary>
-        public bool IsRunning => _monitorThread.ThreadState == ThreadState.Running;
+        public bool IsRunning => _monitorThread.ThreadState == ThreadState.Running || _monitorThread.IsAlive;
 
         /// <summary>
         /// Stops listening for new packet connections.
         /// </summary>
         public void StopListening()
         {
-            if (_monitorThread.ThreadState == ThreadState.Running)
-                _monitorThread.Abort();
+            if (_monitorThread != null && (_monitorThread.ThreadState == ThreadState.Running || _monitorThread.IsAlive))
+                _monitorThread?.Abort();
+        }
+
+        /// <summary>
+        /// Pauses the listening for new packet connections.
+        /// </summary>
+        public void PauseListening()
+        {
+            // if (_monitorThread.ThreadState == ThreadState.Running)
+            _pauseEvent.Reset();
+
+        }
+
+        /// <summary>
+        /// Resumes the listening for new packet connections.
+        /// </summary>
+        public void ResumeListening()
+        {
+            // if (_monitorThread.ThreadState == ThreadState.Suspended )
+            _pauseEvent.Set();
+
         }
 
         /// <summary>
@@ -241,6 +263,7 @@ namespace Network_Packet_Traffic.Connections
                 NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos.ToArray());
 
                 Thread.Sleep(Interval);
+                _pauseEvent.WaitOne();
             }
         }
 

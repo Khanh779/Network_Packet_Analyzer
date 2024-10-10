@@ -43,6 +43,8 @@ namespace Network_Packet_Traffic
             this.lblTcpDescription = new System.Windows.Forms.Label();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.LB_Filter = new System.Windows.Forms.Label();
+            this.tbt_Filter = new System.Windows.Forms.TextBox();
             this.menuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tab_ListMonitor.SuspendLayout();
@@ -57,7 +59,7 @@ namespace Network_Packet_Traffic
             this.filterMonitorToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(680, 24);
+            this.menuStrip.Size = new System.Drawing.Size(640, 24);
             this.menuStrip.TabIndex = 0;
             // 
             // fileToolStripMenuItem
@@ -141,6 +143,7 @@ namespace Network_Packet_Traffic
             this.iPToolStripMenuItem.Name = "iPToolStripMenuItem";
             this.iPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.iPToolStripMenuItem.Text = "On/ Off";
+            this.iPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.iPToolStripMenuItem_CheckedChanged);
             // 
             // otherToolStripMenuItem
             // 
@@ -161,7 +164,7 @@ namespace Network_Packet_Traffic
             this.iPToolStripMenuItem1.CheckOnClick = true;
             this.iPToolStripMenuItem1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.iPToolStripMenuItem1.Name = "iPToolStripMenuItem1";
-            this.iPToolStripMenuItem1.Size = new System.Drawing.Size(166, 22);
+            this.iPToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.iPToolStripMenuItem1.Text = "IP";
             // 
             // tCPToolStripMenuItem
@@ -170,7 +173,7 @@ namespace Network_Packet_Traffic
             this.tCPToolStripMenuItem.CheckOnClick = true;
             this.tCPToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.tCPToolStripMenuItem.Name = "tCPToolStripMenuItem";
-            this.tCPToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.tCPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.tCPToolStripMenuItem.Text = "TCP";
             // 
             // uDPToolStripMenuItem
@@ -179,7 +182,7 @@ namespace Network_Packet_Traffic
             this.uDPToolStripMenuItem.CheckOnClick = true;
             this.uDPToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.uDPToolStripMenuItem.Name = "uDPToolStripMenuItem";
-            this.uDPToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.uDPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.uDPToolStripMenuItem.Text = "UDP";
             // 
             // aRPToolStripMenuItem
@@ -188,7 +191,7 @@ namespace Network_Packet_Traffic
             this.aRPToolStripMenuItem.CheckOnClick = true;
             this.aRPToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.aRPToolStripMenuItem.Name = "aRPToolStripMenuItem";
-            this.aRPToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.aRPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aRPToolStripMenuItem.Text = "ARP";
             // 
             // iCMPToolStripMenuItem
@@ -197,7 +200,7 @@ namespace Network_Packet_Traffic
             this.iCMPToolStripMenuItem.CheckOnClick = true;
             this.iCMPToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.iCMPToolStripMenuItem.Name = "iCMPToolStripMenuItem";
-            this.iCMPToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.iCMPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.iCMPToolStripMenuItem.Text = "ICMP";
             // 
             // otherUnknownToolStripMenuItem
@@ -206,7 +209,7 @@ namespace Network_Packet_Traffic
             this.otherUnknownToolStripMenuItem.CheckOnClick = true;
             this.otherUnknownToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.otherUnknownToolStripMenuItem.Name = "otherUnknownToolStripMenuItem";
-            this.otherUnknownToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.otherUnknownToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.otherUnknownToolStripMenuItem.Text = "Other (Unknown)";
             // 
             // tabControl
@@ -221,7 +224,7 @@ namespace Network_Packet_Traffic
             this.tabControl.Multiline = true;
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(671, 391);
+            this.tabControl.Size = new System.Drawing.Size(631, 337);
             this.tabControl.TabIndex = 1;
             // 
             // tab_Home
@@ -229,18 +232,20 @@ namespace Network_Packet_Traffic
             this.tab_Home.BackColor = System.Drawing.Color.White;
             this.tab_Home.Location = new System.Drawing.Point(4, 22);
             this.tab_Home.Name = "tab_Home";
-            this.tab_Home.Size = new System.Drawing.Size(663, 365);
+            this.tab_Home.Size = new System.Drawing.Size(623, 311);
             this.tab_Home.TabIndex = 0;
             this.tab_Home.Text = "Home";
             // 
             // tab_ListMonitor
             // 
             this.tab_ListMonitor.BackColor = System.Drawing.Color.White;
+            this.tab_ListMonitor.Controls.Add(this.tbt_Filter);
+            this.tab_ListMonitor.Controls.Add(this.LB_Filter);
             this.tab_ListMonitor.Controls.Add(this.listViewConnections);
             this.tab_ListMonitor.Controls.Add(this.lblTcpDescription);
             this.tab_ListMonitor.Location = new System.Drawing.Point(4, 22);
             this.tab_ListMonitor.Name = "tab_ListMonitor";
-            this.tab_ListMonitor.Size = new System.Drawing.Size(663, 365);
+            this.tab_ListMonitor.Size = new System.Drawing.Size(623, 311);
             this.tab_ListMonitor.TabIndex = 1;
             this.tab_ListMonitor.Text = "Packet Monitor";
             // 
@@ -252,9 +257,9 @@ namespace Network_Packet_Traffic
             this.listViewConnections.FullRowSelect = true;
             this.listViewConnections.GridLines = true;
             this.listViewConnections.HideSelection = false;
-            this.listViewConnections.Location = new System.Drawing.Point(3, 45);
+            this.listViewConnections.Location = new System.Drawing.Point(3, 65);
             this.listViewConnections.Name = "listViewConnections";
-            this.listViewConnections.Size = new System.Drawing.Size(657, 317);
+            this.listViewConnections.Size = new System.Drawing.Size(617, 245);
             this.listViewConnections.TabIndex = 2;
             this.listViewConnections.UseCompatibleStateImageBehavior = false;
             this.listViewConnections.View = System.Windows.Forms.View.Details;
@@ -264,9 +269,9 @@ namespace Network_Packet_Traffic
             this.lblTcpDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTcpDescription.AutoEllipsis = true;
-            this.lblTcpDescription.Location = new System.Drawing.Point(6, 12);
+            this.lblTcpDescription.Location = new System.Drawing.Point(6, 10);
             this.lblTcpDescription.Name = "lblTcpDescription";
-            this.lblTcpDescription.Size = new System.Drawing.Size(648, 26);
+            this.lblTcpDescription.Size = new System.Drawing.Size(608, 24);
             this.lblTcpDescription.TabIndex = 0;
             this.lblTcpDescription.Text = "Monitor and manage network packet connections based on the selected protocol.";
             // 
@@ -274,9 +279,9 @@ namespace Network_Packet_Traffic
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 421);
+            this.statusStrip.Location = new System.Drawing.Point(0, 367);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(680, 22);
+            this.statusStrip.Size = new System.Drawing.Size(640, 22);
             this.statusStrip.TabIndex = 2;
             // 
             // toolStripStatusLabel
@@ -285,9 +290,30 @@ namespace Network_Packet_Traffic
             this.toolStripStatusLabel.Size = new System.Drawing.Size(39, 17);
             this.toolStripStatusLabel.Text = "Ready";
             // 
+            // LB_Filter
+            // 
+            this.LB_Filter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LB_Filter.AutoEllipsis = true;
+            this.LB_Filter.Location = new System.Drawing.Point(5, 37);
+            this.LB_Filter.Name = "LB_Filter";
+            this.LB_Filter.Size = new System.Drawing.Size(52, 18);
+            this.LB_Filter.TabIndex = 3;
+            this.LB_Filter.Text = "Filer by:";
+            this.LB_Filter.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // tbt_Filter
+            // 
+            this.tbt_Filter.Location = new System.Drawing.Point(51, 37);
+            this.tbt_Filter.Name = "tbt_Filter";
+            this.tbt_Filter.Size = new System.Drawing.Size(151, 20);
+            this.tbt_Filter.TabIndex = 4;
+            this.tbt_Filter.TextChanged += new System.EventHandler(this.tbt_Filter_TextChanged);
+            // 
             // Form1
             // 
-            this.ClientSize = new System.Drawing.Size(680, 443);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.ClientSize = new System.Drawing.Size(640, 389);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.statusStrip);
@@ -300,6 +326,7 @@ namespace Network_Packet_Traffic
             this.menuStrip.PerformLayout();
             this.tabControl.ResumeLayout(false);
             this.tab_ListMonitor.ResumeLayout(false);
+            this.tab_ListMonitor.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -333,5 +360,7 @@ namespace Network_Packet_Traffic
         private ToolStripMenuItem aRPToolStripMenuItem;
         private ToolStripMenuItem iCMPToolStripMenuItem;
         private ToolStripMenuItem otherUnknownToolStripMenuItem;
+        private Label LB_Filter;
+        private TextBox tbt_Filter;
     }
 }
