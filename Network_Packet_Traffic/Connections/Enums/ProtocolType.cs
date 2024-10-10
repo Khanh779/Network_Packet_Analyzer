@@ -3,6 +3,11 @@
     public enum ProtocolType
     {
         /// <summary>
+        /// Unknown protocol filter.
+        /// </summary>
+        UNKNOWN = -1,
+
+        /// <summary>
         /// Transmission Control Protocol (TCP) - A connection-oriented protocol 
         /// that ensures reliable, ordered, and error-checked delivery of data over the network.
         /// </summary>

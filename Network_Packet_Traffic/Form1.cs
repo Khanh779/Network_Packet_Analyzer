@@ -199,7 +199,7 @@ namespace Network_Packet_Traffic
             else if (iCMPToolStripMenuItem.Checked)
                 tempState = 4;
             else if (otherUnknownToolStripMenuItem.Checked)
-                tempState = 5;
+                tempState = -1;
             else
                 tempState = 0;
 
@@ -207,6 +207,6 @@ namespace Network_Packet_Traffic
 
         }
 
-      
+
     }
 }

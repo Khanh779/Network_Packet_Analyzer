@@ -15,6 +15,11 @@ namespace Network_Packet_Traffic.Connections.Enums
     public enum ProtocolFilter
     {
         /// <summary>
+        /// Unknown protocol filter.
+        /// </summary>
+        UNKNOWN = -1,
+
+        /// <summary>
         /// Filter for all protocols, no specific filtering is applied.
         /// </summary>
         All,
