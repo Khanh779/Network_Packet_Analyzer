@@ -45,7 +45,7 @@ namespace Network_Packet_Traffic.Connections
         /// </summary>
         public event NewPacketConnectionEndedHandler NewPacketConnectionEnded;
 
-        private HashSet<PacketConnectionInfo> _previousPackets = new HashSet<PacketConnectionInfo>();
+        private HashSet<PacketConnectionInfo> _previousPackets;
         private Thread _monitorThread = null;
 
 
@@ -55,6 +55,7 @@ namespace Network_Packet_Traffic.Connections
         /// <param name="autoReload">Indicates whether the monitor should auto-reload periodically.</param>
         public ConnectionsMonitor(bool autoReload = true)
         {
+            _previousPackets = new HashSet<PacketConnectionInfo>();
             _monitorThread = new Thread(MonitorPacketConnections);
             IsAutoReload = autoReload;
             _monitorThread.IsBackground = true;
@@ -119,7 +120,7 @@ namespace Network_Packet_Traffic.Connections
         public ProtocolFilter ProtocolFilter { get; set; } = ProtocolFilter.All;
 
 
-        HashSet<PacketConnectionInfo> GetBasePacket(ProtocolFilter protocolFilter = ProtocolFilter.All)
+        HashSet<PacketConnectionInfo> GetBasePacket(ProtocolFilter protocolFilter)
         {
             HashSet<PacketConnectionInfo> packetConnectionInfos = new HashSet<PacketConnectionInfo>();
 
@@ -237,9 +238,13 @@ namespace Network_Packet_Traffic.Connections
         /// </summary>
         private void MonitorPacketConnections()
         {
-            do
+            while (IsAutoReload)
             {
                 HashSet<PacketConnectionInfo> packetConnectionInfos = GetBasePacket(ProtocolFilter);
+
+                // Trigger event for new packets
+                NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos.ToArray());
+
                 var getSta = packetConnectionInfos;
                 var getStop = packetConnectionInfos;
 
@@ -256,13 +261,11 @@ namespace Network_Packet_Traffic.Connections
                         NewPacketConnectionEnded?.Invoke(this, oldPacket);
 
                 }
-                // Trigger event for new packets
-                NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos.ToArray());
+
                 Thread.Sleep(Interval);
 
                 getSta.Clear(); getStop.Clear();
             }
-            while (IsAutoReload);
         }
 
 

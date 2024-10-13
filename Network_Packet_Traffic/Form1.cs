@@ -57,9 +57,41 @@ namespace Network_Packet_Traffic
             connectionsMonitor.StartListening();
         }
 
+
+        private void OnPacketConnectionStarted(object sender, PacketConnectionInfo packet)
+        {
+            if (isLoadedConnections && listViewConnections.InvokeRequired)
+            {
+                var liIt = CreateListViewItem(packet);
+                listViewConnections.Invoke((Action)
+                    delegate
+                    {
+                        if (IsPacketFilterMonitor(packet) && !listViewConnections.Items.Contains(liIt))
+                            listViewConnections.Items.Add(liIt);
+                    });
+            }
+        }
+
+        private void OnPacketConnectionEnded(object sender, PacketConnectionInfo packet)
+        {
+            if (isLoadedConnections && listViewConnections.InvokeRequired)
+            {
+                var liIt = CreateListViewItem(packet);
+                listViewConnections.Invoke((Action)
+                    delegate
+                    {
+                        if (!IsPacketFilterMonitor(packet) || (IsPacketFilterMonitor(packet) && listViewConnections.Items.Contains(liIt)))
+                            listViewConnections.Items.Remove(liIt);
+                    });
+            }
+        }
+
+
+
+
+
         private void UpdateListView(object sender, PacketConnectionInfo[] packets)
         {
-
             if (isLoadedConnections == false)
             {
                 var listViewItems = ConvertFromPackArrayToListView(packets);
@@ -77,6 +109,8 @@ namespace Network_Packet_Traffic
             }
             isLoadedConnections = true;
             UpdateStatusLabel();
+
+
         }
 
         ListViewItem[] ConvertFromPackArrayToListView(PacketConnectionInfo[] packetConnectionInfos)
@@ -90,8 +124,6 @@ namespace Network_Packet_Traffic
             }
             return listViewItems.ToArray();
         }
-
-
 
         private ListViewItem CreateListViewItem(PacketConnectionInfo packet)
         {
@@ -125,40 +157,10 @@ namespace Network_Packet_Traffic
             }
         }
 
-        private void OnPacketConnectionStarted(object sender, PacketConnectionInfo packet)
-        {
-            if (isLoadedConnections && listViewConnections.InvokeRequired)
-            {
-                var liIt = CreateListViewItem(packet);
-                listViewConnections.Invoke((Action)
-                    delegate
-                    {
-                        if (IsPacketFilterMonitor(packet) && !listViewConnections.Items.Contains(liIt))
-                            listViewConnections.Items.Add(liIt);
-                    });
-            }
-        }
-
-        private void OnPacketConnectionEnded(object sender, PacketConnectionInfo packet)
-        {
-            if (isLoadedConnections && listViewConnections.InvokeRequired)
-            {
-                var liIt = CreateListViewItem(packet);
-                listViewConnections.Invoke((Action)
-                    delegate
-                    {
-                        if (!IsPacketFilterMonitor(packet) || (IsPacketFilterMonitor(packet) && listViewConnections.Items.Contains(liIt)))
-                            listViewConnections.Items.Remove(liIt);
-                    });
-            }
-        }
-
-
-
         bool IsPacketFilterMonitor(PacketConnectionInfo packet)
         {
             return
-                packet.Protocol == ProtocolType.IPNET && iPToolStripMenuItem.Checked ||
+                packet.Protocol == ProtocolType.IPNET && iPToolStripMenuItem1.Checked ||
                 packet.Protocol == ProtocolType.TCP && tCPToolStripMenuItem.Checked ||
                 packet.Protocol == ProtocolType.UDP && uDPToolStripMenuItem.Checked ||
                 packet.Protocol == ProtocolType.ARP && aRPToolStripMenuItem.Checked ||
@@ -184,26 +186,36 @@ namespace Network_Packet_Traffic
 
         void UpdateFilter()
         {
-            connectionsMonitor.ProtocolFilter = ProtocolFilter.NoFilter;
-
-            if (iPToolStripMenuItem.Checked)
-                connectionsMonitor.ProtocolFilter |= ProtocolFilter.IPNET;
-            if (tCPToolStripMenuItem.Checked)
-                connectionsMonitor.ProtocolFilter |= ProtocolFilter.TCP;
-            if (uDPToolStripMenuItem.Checked)
-                connectionsMonitor.ProtocolFilter |= ProtocolFilter.UDP;
-            if (aRPToolStripMenuItem.Checked)
-                connectionsMonitor.ProtocolFilter |= ProtocolFilter.ARP;
-            if (iCMPToolStripMenuItem.Checked)
-                connectionsMonitor.ProtocolFilter |= ProtocolFilter.ICMP;
-            if (otherUnknownToolStripMenuItem.Checked)
-                connectionsMonitor.ProtocolFilter |= ProtocolFilter.UNKNOWN;
+            connectionsMonitor.ProtocolFilter = protocolFilters;
         }
+
+        ProtocolFilter protocolFilters
+        {
+            get
+            {
+                ProtocolFilter protocolFilter = ProtocolFilter.NoFilter;
+                if (iPToolStripMenuItem1.Checked)
+                    protocolFilter |= ProtocolFilter.IPNET;
+                if (tCPToolStripMenuItem.Checked)
+                    protocolFilter |= ProtocolFilter.TCP;
+                if (uDPToolStripMenuItem.Checked)
+                    protocolFilter |= ProtocolFilter.UDP;
+                if (aRPToolStripMenuItem.Checked)
+                    protocolFilter |= ProtocolFilter.ARP;
+                if (iCMPToolStripMenuItem.Checked)
+                    protocolFilter |= ProtocolFilter.ICMP;
+                if (otherUnknownToolStripMenuItem.Checked)
+                    protocolFilter |= ProtocolFilter.UNKNOWN;
+                return protocolFilter;
+            }
+        }
+
 
         private void iPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
             if (connectionsMonitor != null)
             {
+                UpdateFilter();
                 if (iPToolStripMenuItem.Checked)
                     connectionsMonitor.StartListening();
                 else
