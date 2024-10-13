@@ -39,12 +39,12 @@ namespace Network_Packet_Traffic
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tab_Home = new System.Windows.Forms.TabPage();
             this.tab_ListMonitor = new System.Windows.Forms.TabPage();
+            this.tbt_Filter = new System.Windows.Forms.TextBox();
+            this.LB_Filter = new System.Windows.Forms.Label();
             this.listViewConnections = new System.Windows.Forms.ListView();
             this.lblTcpDescription = new System.Windows.Forms.Label();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.LB_Filter = new System.Windows.Forms.Label();
-            this.tbt_Filter = new System.Windows.Forms.TextBox();
             this.menuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tab_ListMonitor.SuspendLayout();
@@ -105,25 +105,25 @@ namespace Network_Packet_Traffic
             // 
             this.portScannerToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.portScannerToolStripMenuItem.Name = "portScannerToolStripMenuItem";
-            this.portScannerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.portScannerToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.portScannerToolStripMenuItem.Text = "Port Scanner";
             // 
             // pingSnifferToolStripMenuItem
             // 
             this.pingSnifferToolStripMenuItem.Name = "pingSnifferToolStripMenuItem";
-            this.pingSnifferToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.pingSnifferToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.pingSnifferToolStripMenuItem.Text = "Ping Sniffer";
             // 
             // dHPCToolStripMenuItem
             // 
             this.dHPCToolStripMenuItem.Name = "dHPCToolStripMenuItem";
-            this.dHPCToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dHPCToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.dHPCToolStripMenuItem.Text = "DHPC";
             // 
             // dNSToolStripMenuItem
             // 
             this.dNSToolStripMenuItem.Name = "dNSToolStripMenuItem";
-            this.dNSToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dNSToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
             this.dNSToolStripMenuItem.Text = "DNS";
             // 
             // filterMonitorToolStripMenuItem
@@ -166,6 +166,7 @@ namespace Network_Packet_Traffic
             this.iPToolStripMenuItem1.Name = "iPToolStripMenuItem1";
             this.iPToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.iPToolStripMenuItem1.Text = "IP";
+            this.iPToolStripMenuItem1.CheckedChanged += new System.EventHandler(this.iPToolStripMenuItem1_CheckedChanged);
             // 
             // tCPToolStripMenuItem
             // 
@@ -175,6 +176,7 @@ namespace Network_Packet_Traffic
             this.tCPToolStripMenuItem.Name = "tCPToolStripMenuItem";
             this.tCPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.tCPToolStripMenuItem.Text = "TCP";
+            this.tCPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.tCPToolStripMenuItem_CheckedChanged);
             // 
             // uDPToolStripMenuItem
             // 
@@ -184,6 +186,7 @@ namespace Network_Packet_Traffic
             this.uDPToolStripMenuItem.Name = "uDPToolStripMenuItem";
             this.uDPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.uDPToolStripMenuItem.Text = "UDP";
+            this.uDPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.uDPToolStripMenuItem_CheckedChanged);
             // 
             // aRPToolStripMenuItem
             // 
@@ -193,6 +196,7 @@ namespace Network_Packet_Traffic
             this.aRPToolStripMenuItem.Name = "aRPToolStripMenuItem";
             this.aRPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aRPToolStripMenuItem.Text = "ARP";
+            this.aRPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.aRPToolStripMenuItem_CheckedChanged);
             // 
             // iCMPToolStripMenuItem
             // 
@@ -202,6 +206,7 @@ namespace Network_Packet_Traffic
             this.iCMPToolStripMenuItem.Name = "iCMPToolStripMenuItem";
             this.iCMPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.iCMPToolStripMenuItem.Text = "ICMP";
+            this.iCMPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.iCMPToolStripMenuItem_CheckedChanged);
             // 
             // otherUnknownToolStripMenuItem
             // 
@@ -211,6 +216,7 @@ namespace Network_Packet_Traffic
             this.otherUnknownToolStripMenuItem.Name = "otherUnknownToolStripMenuItem";
             this.otherUnknownToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.otherUnknownToolStripMenuItem.Text = "Other (Unknown)";
+            this.otherUnknownToolStripMenuItem.CheckedChanged += new System.EventHandler(this.otherUnknownToolStripMenuItem_CheckedChanged);
             // 
             // tabControl
             // 
@@ -248,6 +254,26 @@ namespace Network_Packet_Traffic
             this.tab_ListMonitor.Size = new System.Drawing.Size(623, 311);
             this.tab_ListMonitor.TabIndex = 1;
             this.tab_ListMonitor.Text = "Packet Monitor";
+            // 
+            // tbt_Filter
+            // 
+            this.tbt_Filter.Location = new System.Drawing.Point(51, 37);
+            this.tbt_Filter.Name = "tbt_Filter";
+            this.tbt_Filter.Size = new System.Drawing.Size(151, 20);
+            this.tbt_Filter.TabIndex = 4;
+            this.tbt_Filter.TextChanged += new System.EventHandler(this.tbt_Filter_TextChanged);
+            // 
+            // LB_Filter
+            // 
+            this.LB_Filter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LB_Filter.AutoEllipsis = true;
+            this.LB_Filter.Location = new System.Drawing.Point(5, 37);
+            this.LB_Filter.Name = "LB_Filter";
+            this.LB_Filter.Size = new System.Drawing.Size(52, 18);
+            this.LB_Filter.TabIndex = 3;
+            this.LB_Filter.Text = "Filer by:";
+            this.LB_Filter.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // listViewConnections
             // 
@@ -289,26 +315,6 @@ namespace Network_Packet_Traffic
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
             this.toolStripStatusLabel.Size = new System.Drawing.Size(39, 17);
             this.toolStripStatusLabel.Text = "Ready";
-            // 
-            // LB_Filter
-            // 
-            this.LB_Filter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LB_Filter.AutoEllipsis = true;
-            this.LB_Filter.Location = new System.Drawing.Point(5, 37);
-            this.LB_Filter.Name = "LB_Filter";
-            this.LB_Filter.Size = new System.Drawing.Size(52, 18);
-            this.LB_Filter.TabIndex = 3;
-            this.LB_Filter.Text = "Filer by:";
-            this.LB_Filter.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // tbt_Filter
-            // 
-            this.tbt_Filter.Location = new System.Drawing.Point(51, 37);
-            this.tbt_Filter.Name = "tbt_Filter";
-            this.tbt_Filter.Size = new System.Drawing.Size(151, 20);
-            this.tbt_Filter.TabIndex = 4;
-            this.tbt_Filter.TextChanged += new System.EventHandler(this.tbt_Filter_TextChanged);
             // 
             // Form1
             // 

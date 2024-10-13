@@ -240,15 +240,17 @@ namespace Network_Packet_Traffic.Connections
             do
             {
                 HashSet<PacketConnectionInfo> packetConnectionInfos = GetBasePacket(ProtocolFilter);
+                var getSta = packetConnectionInfos;
+                var getStop = packetConnectionInfos;
 
                 // Trigger event for all new packets
-                foreach (var packet in packetConnectionInfos)
+                foreach (var packet in getSta)
                 {
                     if (_previousPackets.Add(packet))
                         NewPacketConnectionStarted?.Invoke(this, packet);
                 }
 
-                foreach (var oldPacket in packetConnectionInfos)
+                foreach (var oldPacket in getStop)
                 {
                     if (_previousPackets.Remove(oldPacket))
                         NewPacketConnectionEnded?.Invoke(this, oldPacket);
@@ -257,6 +259,8 @@ namespace Network_Packet_Traffic.Connections
                 // Trigger event for new packets
                 NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos.ToArray());
                 Thread.Sleep(Interval);
+
+                getSta.Clear(); getStop.Clear();
             }
             while (IsAutoReload);
         }
