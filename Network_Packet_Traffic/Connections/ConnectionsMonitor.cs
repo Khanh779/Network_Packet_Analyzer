@@ -47,7 +47,7 @@ namespace Network_Packet_Traffic.Connections
 
         private HashSet<PacketConnectionInfo> _previousPackets = new HashSet<PacketConnectionInfo>();
         private Thread _monitorThread = null;
-        private ManualResetEvent _pauseEvent;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectionsMonitor"/> class.
@@ -56,7 +56,6 @@ namespace Network_Packet_Traffic.Connections
         public ConnectionsMonitor(bool autoReload = true)
         {
             _monitorThread = new Thread(MonitorPacketConnections);
-            _pauseEvent = new ManualResetEvent(true);
             IsAutoReload = autoReload;
             _monitorThread.IsBackground = true;
         }
@@ -99,8 +98,8 @@ namespace Network_Packet_Traffic.Connections
         /// </summary>
         public void PauseListening()
         {
-            // if (_monitorThread.ThreadState == ThreadState.Running)
-            _pauseEvent.Reset();
+            if (_monitorThread.ThreadState == ThreadState.Running)
+                _monitorThread.Suspend();
 
         }
 
@@ -109,8 +108,8 @@ namespace Network_Packet_Traffic.Connections
         /// </summary>
         public void ResumeListening()
         {
-            // if (_monitorThread.ThreadState == ThreadState.Suspended )
-            _pauseEvent.Set();
+            if (_monitorThread.ThreadState == ThreadState.Suspended)
+                _monitorThread.Resume();
 
         }
 
@@ -238,7 +237,7 @@ namespace Network_Packet_Traffic.Connections
         /// </summary>
         private void MonitorPacketConnections()
         {
-            while (IsAutoReload)
+            do
             {
                 HashSet<PacketConnectionInfo> packetConnectionInfos = GetBasePacket(ProtocolFilter);
 
@@ -246,25 +245,20 @@ namespace Network_Packet_Traffic.Connections
                 foreach (var packet in packetConnectionInfos)
                 {
                     if (_previousPackets.Add(packet))
-                    {
                         NewPacketConnectionStarted?.Invoke(this, packet);
-                    }
                 }
 
-                // Check for disconnected packets
-                var disconnectedPackets = _previousPackets.Where(oldPacket => !packetConnectionInfos.Contains(oldPacket)).ToList();
-                foreach (var oldPacket in disconnectedPackets)
+                foreach (var oldPacket in packetConnectionInfos)
                 {
-                    NewPacketConnectionEnded?.Invoke(this, oldPacket);
-                    _previousPackets.Remove(oldPacket);
-                }
+                    if (_previousPackets.Remove(oldPacket))
+                        NewPacketConnectionEnded?.Invoke(this, oldPacket);
 
+                }
                 // Trigger event for new packets
                 NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos.ToArray());
-
                 Thread.Sleep(Interval);
-                _pauseEvent.WaitOne();
             }
+            while (IsAutoReload);
         }
 
 

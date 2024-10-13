@@ -19,6 +19,10 @@ namespace Network_Packet_Traffic.Connections.Enums
         /// </summary>
         UNKNOWN = -1,
 
+
+        NoFilter = 0,
+
+
         /// <summary>
         /// Filter for all protocols, no specific filtering is applied.
         /// </summary>
