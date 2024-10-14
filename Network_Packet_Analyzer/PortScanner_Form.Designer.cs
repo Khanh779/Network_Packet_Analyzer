@@ -17,6 +17,7 @@
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PortScanner_Form));
             this.txtIPAddress = new System.Windows.Forms.TextBox();
             this.txtStartPort = new System.Windows.Forms.TextBox();
             this.txtEndPort = new System.Windows.Forms.TextBox();
@@ -144,6 +145,7 @@
             this.Controls.Add(this.txtStartPort);
             this.Controls.Add(this.txtIPAddress);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "PortScanner_Form";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

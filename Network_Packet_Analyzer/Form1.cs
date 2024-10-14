@@ -223,5 +223,10 @@ namespace Network_Packet_Analyzer
         {
             new PortScanner_Form().Show();
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new AboutForm().ShowDialog();
+        }
     }
 }

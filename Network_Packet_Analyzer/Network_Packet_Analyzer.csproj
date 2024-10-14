@@ -36,6 +36,9 @@
     <StartupObject>
     </StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icons8-heart-monitor-96.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -50,6 +53,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Connections\ARP\MIB_ARP_TYPE.cs" />
     <Compile Include="Connections\ConnectionsMonitor.cs" />
     <Compile Include="Connections\ARP\ForwardingStatus.cs" />
@@ -107,6 +116,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SocketViaAdmin\SocketMonitor.cs" />
     <Compile Include="ConnectionsInformation\NetworkConnectionInfo.cs" />
+    <EmbeddedResource Include="AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -141,6 +153,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Connections\UseDnsAndDhcp.txt" />
+    <Content Include="icons8-heart-monitor-96.ico" />
+    <None Include="Resources\icons8-heart-monitor-96.png" />
+    <None Include="Resources\icons8-heart-monitor-96.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

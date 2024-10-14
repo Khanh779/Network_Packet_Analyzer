@@ -15,6 +15,7 @@
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PingForm));
             this.txtIPAddress = new System.Windows.Forms.TextBox();
             this.btnPing = new System.Windows.Forms.Button();
             this.rtbResults = new System.Windows.Forms.RichTextBox();
@@ -80,6 +81,7 @@
             this.Controls.Add(this.rtbResults);
             this.Controls.Add(this.btnPing);
             this.Controls.Add(this.txtIPAddress);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "PingForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Ping Sniffer";

@@ -117,24 +117,45 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="menuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <data name="label1.Text" xml:space="preserve">
-    <value>This application helps analyze network traffic and monitor packets in real time.
-
-Features:
-- Port Scanner
-- Ping Sniffer
-- Analyze and display detailed network packet information.
-- Support for TCP, UDP, ARP, IP, ICMP, DHCP, DNS protocols.
-- Real-time monitoring of active and closed connections.
-- Events for new and ended connections.</value>
-  </data>
-  <metadata name="statusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>126, 17</value>
-  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="pictureBoxLogo.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+        mv8AU+CIHVQR4MwAAAAASUVORK5CYII=
+</value>
+  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAYGAAAAEAIAColAAAFgAAACgAAABgAAAAwAAAAAEAIAAAAAAAAJAAABMLAAATCwAAAAAAAAAA
