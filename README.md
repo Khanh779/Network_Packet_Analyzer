@@ -1,9 +1,9 @@
-# Network_Packet_Traffic
-The "Network Packet Traffic" project is a network traffic monitoring and packet analysis tool that captures, analyzes, and displays information about data packets transmitted over the network.
+# Network_Packet_Analyzer
+The "Network Packet Analyzer" project is a network traffic monitoring and packet analysis tool that captures, analyzes, and displays information about data packets transmitted over the network.
 
 ## Overview
-![image](https://github.com/Khanh779/Network_Packet_Traffic/blob/master/ScreenShot/Screenshot_0.png)
-![image](https://github.com/Khanh779/Network_Packet_Traffic/blob/master/ScreenShot/Screenshot_1.png)
+![image](https://github.com/Khanh779/Network_Packet_Analyzer/blob/master/ScreenShot/Screenshot_0.png)
+![image](https://github.com/Khanh779/Network_Packet_Analyzer/blob/master/ScreenShot/Screenshot_1.png)
 
 ## Features
 - Analyze and display detailed network packet information.
