@@ -18,7 +18,7 @@ namespace Network_Packet_Analyzer
 
 
         const int WM_SETTEXT = 0x000C;
-        const int EM_SETCUEBANNER = 0x1501; 
+        const int EM_SETCUEBANNER = 0x1501;
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, string lParam);
@@ -34,60 +34,12 @@ namespace Network_Packet_Analyzer
 
         private void btnPing_Click(object sender, EventArgs e)
         {
-            Excut1();
+            ExecutePing();
         }
 
 
-        void Excut1()
+        void ExecutePing()
         {
-            string host = txtIPAddress.Text; // Lấy địa chỉ IP từ TextBox
-            Ping ping = new Ping();
-            int successCount = 0;
-            int totalTime = 0;
-            int minTime = int.MaxValue;
-            int maxTime = int.MinValue;
-
-            rtbResults.Clear(); // Xóa kết quả trước khi thực hiện ping
-            for (int i = 0; i < 4; i++) // Gửi 4 ping
-            {
-                try
-                {
-                    PingReply reply = ping.Send(host);
-                    if (reply.Status == IPStatus.Success)
-                    {
-                        rtbResults.AppendText($"Reply from {reply.Address}: time={reply.RoundtripTime}ms\n");
-                        successCount++;
-                        totalTime += (int)reply.RoundtripTime;
-
-                        // Cập nhật min/max
-                        if (reply.RoundtripTime < minTime) minTime = (int)reply.RoundtripTime;
-                        if (reply.RoundtripTime > maxTime) maxTime = (int)reply.RoundtripTime;
-                    }
-                    else
-                    {
-                        rtbResults.AppendText($"Ping failed: {reply.Status}\n");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    rtbResults.AppendText($"Error: {ex.Message}\n");
-                }
-            }
-
-            // Hiện thống kê
-            rtbResults.AppendText($"\nPing statistics:\n");
-            rtbResults.AppendText($"Packets: Sent = 4, Received = {successCount}, Lost = {4 - successCount} ({(4 - successCount) * 100 / 4}% loss),\n");
-            if (successCount > 0)
-            {
-                rtbResults.AppendText($"Approximate round trip times in milli-seconds:\n");
-                rtbResults.AppendText($"Minimum = {minTime}ms, Maximum = {maxTime}ms, Average = {totalTime / successCount}ms\n");
-            }
-        }
-
-
-        void Excut2()
-        {
-            // Get IP address or hostname
             string address = txtIPAddress.Text.Trim();
             if (string.IsNullOrEmpty(address) || address == "Enter IP Address or Hostname")
             {
@@ -95,22 +47,37 @@ namespace Network_Packet_Analyzer
                 return;
             }
 
-            // Show progress
             progressBar.Style = ProgressBarStyle.Marquee;
             rtbResults.Clear();
 
-            try
-            {
-                using (Ping ping = new Ping())
-                {
-                    // Execute ping
-                    PingReply reply = ping.Send(address, 1000); // 1000ms timeout
+            Ping ping = new Ping();
+            int successCount = 0;
+            int totalTime = 0;
+            int minTime = int.MaxValue;
+            int maxTime = int.MinValue;
 
-                    // Show results
+            for (int i = 0; i < 4; i++) // Execute 4 times
+            {
+                try
+                {
+                    PingReply reply = ping.Send(address, 1000); // timeout 1000ms
+
                     if (reply.Status == IPStatus.Success)
                     {
-                        rtbResults.AppendText($"Ping to {reply.Address} successful: \n");
-                        rtbResults.AppendText($"Time: {reply.RoundtripTime} ms\n");
+                        // Show results from ping
+                        rtbResults.AppendText($"Reply from {reply.Address}: time={reply.RoundtripTime}ms\n");
+                        successCount++;
+                        totalTime += (int)reply.RoundtripTime;
+
+                        // Refresh min and max time
+                        if (reply.RoundtripTime < minTime) minTime = (int)reply.RoundtripTime;
+                        if (reply.RoundtripTime > maxTime) maxTime = (int)reply.RoundtripTime;
+
+                        // Show more details
+                        rtbResults.AppendText($"IPv4 Address: {reply.Address.MapToIPv4()}\n");
+                        rtbResults.AppendText($"IPv6 Address: {reply.Address.MapToIPv6()}\n");
+                        rtbResults.AppendText($"Address Family: {reply.Address.AddressFamily}\n");
+
                         if (reply.Options != null)
                         {
                             rtbResults.AppendText($"TTL: {reply.Options.Ttl}\n");
@@ -127,16 +94,28 @@ namespace Network_Packet_Analyzer
                         rtbResults.AppendText($"Ping failed: {reply.Status}\n");
                     }
                 }
+                catch (Exception ex)
+                {
+                    rtbResults.AppendText($"Error: {ex.Message}\n");
+                }
             }
-            catch (Exception ex)
+
+            //Show summary
+            rtbResults.AppendText($"\nPing statistics:\n");
+            rtbResults.AppendText($"Packets: Sent = 4, Received = {successCount}, Lost = {4 - successCount} ({(4 - successCount) * 100 / 4}% loss)\n");
+            if (successCount > 0)
             {
-                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                rtbResults.AppendText($"Approximate round trip times in milli-seconds:\n");
+                rtbResults.AppendText($"Minimum = {minTime}ms, Maximum = {maxTime}ms, Average = {totalTime / successCount}ms\n");
             }
-            finally
-            {
-                // Reset progress
-                progressBar.Style = ProgressBarStyle.Blocks;
-            }
+
+            progressBar.Style = ProgressBarStyle.Blocks;
+        }
+
+
+        private void PingForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

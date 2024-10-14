@@ -29,7 +29,7 @@
             this.txtIPAddress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtIPAddress.Location = new System.Drawing.Point(17, 17);
             this.txtIPAddress.Name = "txtIPAddress";
-            this.txtIPAddress.Size = new System.Drawing.Size(325, 20);
+            this.txtIPAddress.Size = new System.Drawing.Size(399, 20);
             this.txtIPAddress.TabIndex = 0;
             // 
             // btnPing
@@ -40,9 +40,9 @@
             this.btnPing.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPing.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold);
             this.btnPing.ForeColor = System.Drawing.Color.White;
-            this.btnPing.Location = new System.Drawing.Point(17, 52);
+            this.btnPing.Location = new System.Drawing.Point(17, 45);
             this.btnPing.Name = "btnPing";
-            this.btnPing.Size = new System.Drawing.Size(324, 30);
+            this.btnPing.Size = new System.Drawing.Size(398, 30);
             this.btnPing.TabIndex = 1;
             this.btnPing.Text = "Ping";
             this.btnPing.UseVisualStyleBackColor = false;
@@ -54,10 +54,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbResults.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.rtbResults.Location = new System.Drawing.Point(17, 91);
+            this.rtbResults.Location = new System.Drawing.Point(17, 81);
             this.rtbResults.Name = "rtbResults";
             this.rtbResults.ReadOnly = true;
-            this.rtbResults.Size = new System.Drawing.Size(325, 109);
+            this.rtbResults.Size = new System.Drawing.Size(399, 171);
             this.rtbResults.TabIndex = 2;
             this.rtbResults.Text = "";
             this.rtbResults.WordWrap = false;
@@ -67,16 +67,16 @@
             this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.progressBar.ForeColor = System.Drawing.Color.LightGreen;
-            this.progressBar.Location = new System.Drawing.Point(17, 203);
+            this.progressBar.Location = new System.Drawing.Point(17, 258);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(324, 10);
+            this.progressBar.Size = new System.Drawing.Size(398, 10);
             this.progressBar.TabIndex = 3;
             // 
             // PingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(359, 229);
+            this.ClientSize = new System.Drawing.Size(433, 274);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.rtbResults);
             this.Controls.Add(this.btnPing);
@@ -87,6 +87,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Ping Sniffer";
+            this.Load += new System.EventHandler(this.PingForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
