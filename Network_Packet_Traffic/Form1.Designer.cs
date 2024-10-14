@@ -35,7 +35,6 @@ namespace Network_Packet_Traffic
             this.uDPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aRPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.iCMPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.otherUnknownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tab_Home = new System.Windows.Forms.TabPage();
             this.tab_ListMonitor = new System.Windows.Forms.TabPage();
@@ -152,8 +151,7 @@ namespace Network_Packet_Traffic
             this.tCPToolStripMenuItem,
             this.uDPToolStripMenuItem,
             this.aRPToolStripMenuItem,
-            this.iCMPToolStripMenuItem,
-            this.otherUnknownToolStripMenuItem});
+            this.iCMPToolStripMenuItem});
             this.otherToolStripMenuItem.Name = "otherToolStripMenuItem";
             this.otherToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.otherToolStripMenuItem.Text = "Filter";
@@ -208,16 +206,6 @@ namespace Network_Packet_Traffic
             this.iCMPToolStripMenuItem.Text = "ICMP";
             this.iCMPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.iCMPToolStripMenuItem_CheckedChanged);
             // 
-            // otherUnknownToolStripMenuItem
-            // 
-            this.otherUnknownToolStripMenuItem.Checked = true;
-            this.otherUnknownToolStripMenuItem.CheckOnClick = true;
-            this.otherUnknownToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.otherUnknownToolStripMenuItem.Name = "otherUnknownToolStripMenuItem";
-            this.otherUnknownToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.otherUnknownToolStripMenuItem.Text = "Other (Unknown)";
-            this.otherUnknownToolStripMenuItem.CheckedChanged += new System.EventHandler(this.otherUnknownToolStripMenuItem_CheckedChanged);
-            // 
             // tabControl
             // 
             this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -265,8 +253,6 @@ namespace Network_Packet_Traffic
             // 
             // LB_Filter
             // 
-            this.LB_Filter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.LB_Filter.AutoEllipsis = true;
             this.LB_Filter.Location = new System.Drawing.Point(5, 37);
             this.LB_Filter.Name = "LB_Filter";
@@ -365,7 +351,6 @@ namespace Network_Packet_Traffic
         private ToolStripMenuItem uDPToolStripMenuItem;
         private ToolStripMenuItem aRPToolStripMenuItem;
         private ToolStripMenuItem iCMPToolStripMenuItem;
-        private ToolStripMenuItem otherUnknownToolStripMenuItem;
         private Label LB_Filter;
         private TextBox tbt_Filter;
     }

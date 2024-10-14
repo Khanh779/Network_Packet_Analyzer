@@ -5,9 +5,11 @@ using Network_Packet_Traffic.Connections.Structs;
 using Network_Packet_Traffic.Connections.TCP;
 using Network_Packet_Traffic.Connections.UDP;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Network_Packet_Traffic.Connections.NetHelper;
 
@@ -69,30 +71,44 @@ namespace Network_Packet_Traffic.Connections
         /// <summary>
         /// Gets or sets the interval for auto-reloading.
         /// </summary>
-        public int Interval { get; set; } = 5000;
+        public int Interval { get; set; } = 4000;
 
         /// <summary>
         /// Starts listening for new packet connections.
         /// </summary>
         public void StartListening()
         {
-            if (_monitorThread != null && (_monitorThread.ThreadState != ThreadState.Running || !_monitorThread.IsAlive))
-                _monitorThread?.Start();
+            _shouldStop = false;
+            if (_monitorThread == null || _monitorThread.ThreadState != ThreadState.Running || _monitorThread.ThreadState == ThreadState.Stopped
+                || _monitorThread.ThreadState == ThreadState.Unstarted || _monitorThread.ThreadState == ThreadState.Aborted) // Chỉ cần kiểm tra không chạy
+            {
+                _monitorThread = new Thread(MonitorPacketConnections);
+
+                _monitorThread.IsBackground = true; // Đặt thread là background nếu chưa
+                _monitorThread.Start();
+            }
         }
+
 
         /// <summary>
         /// Gets a value indicating whether the monitor is currently running.
         /// </summary>
-        public bool IsRunning => _monitorThread.ThreadState == ThreadState.Running || _monitorThread.IsAlive;
+        public bool IsRunning => _monitorThread != null && _monitorThread.ThreadState == ThreadState.Running;
 
         /// <summary>
         /// Stops listening for new packet connections.
         /// </summary>
         public void StopListening()
         {
-            if (_monitorThread != null && (_monitorThread.ThreadState == ThreadState.Running || _monitorThread.IsAlive))
-                _monitorThread?.Abort();
+            _shouldStop = true;
+            if (_monitorThread.ThreadState == ThreadState.Running) // Chỉ cần kiểm tra đang chạy
+            {
+                _monitorThread.Join(); // Đợi thread kết thúc
+                _monitorThread.Abort(); // Sau đó hủy thread
+
+            }
         }
+
 
         /// <summary>
         /// Pauses the listening for new packet connections.
@@ -114,20 +130,26 @@ namespace Network_Packet_Traffic.Connections
 
         }
 
+
+        ProtocolType _ProtocolFilter = ProtocolType.All;
+
         /// <summary>
         /// Gets or sets the protocol filter for the packet connections.
         /// </summary>
-        public ProtocolFilter ProtocolFilter { get; set; } = ProtocolFilter.All;
+        [RefreshProperties(RefreshProperties.All)]
+        public ProtocolType ProtocolFilter
+        {
+            get { return _ProtocolFilter; }
+            set { _ProtocolFilter = value; }
+        }
 
 
-        HashSet<PacketConnectionInfo> GetBasePacket(ProtocolFilter protocolFilter)
+        HashSet<PacketConnectionInfo> GetBasePacket(ProtocolType protocolFilter)
         {
             HashSet<PacketConnectionInfo> packetConnectionInfos = new HashSet<PacketConnectionInfo>();
 
-            // Avoid loading unnecessary data based on the protocol filter
-            if (protocolFilter == ProtocolFilter.All || protocolFilter == ProtocolFilter.TCP)
+            if (protocolFilter == ProtocolType.TCP || protocolFilter == ProtocolType.All)
             {
-                // Populate TCP connection data only if TCP is selected or all protocols
                 MIB_TCPTABLE_OWNER_PID tcpTable = TCP.TCP_Info.GetTcpTable();
                 for (int i = 0; i < tcpTable.dwNumEntries; i++)
                 {
@@ -145,9 +167,8 @@ namespace Network_Packet_Traffic.Connections
                 }
             }
 
-            if (protocolFilter == ProtocolFilter.All || protocolFilter == ProtocolFilter.UDP)
+            if (protocolFilter == ProtocolType.UDP || protocolFilter == ProtocolType.All)
             {
-                // Populate UDP connection data only if UDP is selected or all protocols
                 MIB_UDPTABLE_OWNER_PID udpTable = UDP.UDP_Info.GetUdpTable();
                 for (int i = 0; i < udpTable.dwNumEntries; i++)
                 {
@@ -156,8 +177,8 @@ namespace Network_Packet_Traffic.Connections
                     {
                         LocalAddress = ConvertIpAddress(udpRow.dwLocalAddr),
                         LocalPort = udpRow.dwLocalPort,
-                        RemoteAddress = IPAddress.None, // No remote address for listening sockets
-                        RemotePort = 0, // Same for remote port in UDP listening
+                        RemoteAddress = IPAddress.None,
+                        RemotePort = 0,
                         State = GetState(-1),
                         ProcessId = udpRow.dwOwningPid,
                         Protocol = ProtocolType.UDP
@@ -165,9 +186,8 @@ namespace Network_Packet_Traffic.Connections
                 }
             }
 
-            if (protocolFilter == ProtocolFilter.All || protocolFilter == ProtocolFilter.IPNET)
+            if (protocolFilter == ProtocolType.IPNET || protocolFilter == ProtocolType.All)
             {
-                // Populate IPNET (similar to ARP) connection data
                 MIB_IPNETTABLE ipNetTable = IPNET.IPNET_Info.GetIpNetTable();
                 for (int i = 0; i < ipNetTable.dwNumEntries; i++)
                 {
@@ -176,7 +196,7 @@ namespace Network_Packet_Traffic.Connections
                     {
                         LocalAddress = ConvertIpAddress(ipnetRow.dwAddr),
                         LocalPort = 0,
-                        RemoteAddress = IPAddress.None, // No remote address, mapping to MAC address
+                        RemoteAddress = IPAddress.None,
                         MacAddress = ConvertMacAddress(ipnetRow.bPhysAddr),
                         RemotePort = 0,
                         State = GetState(-1),
@@ -186,9 +206,8 @@ namespace Network_Packet_Traffic.Connections
                 }
             }
 
-            if (protocolFilter == ProtocolFilter.All || protocolFilter == ProtocolFilter.ARP)
+            if (protocolFilter == ProtocolType.ARP || protocolFilter == ProtocolType.All)
             {
-                // Populate ARP table data only if ARP is selected or all protocols
                 MIB_ARPTABLE arpTable = ARP.ARP_Info.GetARPTable();
                 for (int i = 0; i < arpTable.NumberOfEntries; i++)
                 {
@@ -210,12 +229,13 @@ namespace Network_Packet_Traffic.Connections
             return packetConnectionInfos;
         }
 
+
         /// <summary>
         /// Gets the packet connections based on the selected <see cref="ProtocolFilter"/>.
         /// </summary>
         /// <param name="protocolFilter">Filter to select specific protocols or all of them.</param>
         /// <returns>List of <see cref="PacketConnectionInfo"/> based on the protocol filter.</returns>
-        public List<PacketConnectionInfo> GetPacketConnections(ProtocolFilter protocolFilter)
+        public List<PacketConnectionInfo> GetPacketConnections(ProtocolType protocolFilter)
         {
             return GetBasePacket(protocolFilter).ToList();
         }
@@ -226,10 +246,12 @@ namespace Network_Packet_Traffic.Connections
         /// <returns>List of <see cref="PacketConnectionInfo"/> for all protocols.</returns>
         public List<PacketConnectionInfo> GetPacketConnections()
         {
-            return GetBasePacket(ProtocolFilter.All).ToList();
+            return GetBasePacket(ProtocolType.All).ToList();
         }
 
 
+
+        bool _shouldStop = false;
 
         #region Connection Monitoring
 
@@ -240,31 +262,39 @@ namespace Network_Packet_Traffic.Connections
         {
             while (IsAutoReload)
             {
-                HashSet<PacketConnectionInfo> packetConnectionInfos = GetBasePacket(ProtocolFilter);
+                if (_shouldStop)
+                    break;
 
-                // Trigger event for new packets
-                NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos.ToArray());
-
-                var getSta = packetConnectionInfos;
-                var getStop = packetConnectionInfos;
-
-                // Trigger event for all new packets
-                foreach (var packet in getSta)
+                try
                 {
-                    if (_previousPackets.Add(packet))
-                        NewPacketConnectionStarted?.Invoke(this, packet);
+                    HashSet<PacketConnectionInfo> packetConnectionInfos = GetBasePacket(_ProtocolFilter);
+
+                    // Trigger event for new packets
+                    NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos.ToArray());
+
+                    foreach (var oldPacket in _previousPackets)
+                    {
+                        if (!packetConnectionInfos.Contains(oldPacket))
+                        {
+                            NewPacketConnectionStarted?.Invoke(this, oldPacket);
+                        }
+                    }
+
+                    foreach (var newPacket in packetConnectionInfos)
+                    {
+                        if (!_previousPackets.Contains(newPacket))
+                        {
+                            NewPacketConnectionEnded?.Invoke(this, newPacket);
+                        }
+                    }
+
+                    _previousPackets = packetConnectionInfos;
                 }
+                catch { }
 
-                foreach (var oldPacket in getStop)
-                {
-                    if (_previousPackets.Remove(oldPacket))
-                        NewPacketConnectionEnded?.Invoke(this, oldPacket);
-
-                }
-
+                if (_shouldStop)
+                    break;
                 Thread.Sleep(Interval);
-
-                getSta.Clear(); getStop.Clear();
             }
         }
 

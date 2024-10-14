@@ -4,6 +4,7 @@ using Network_Packet_Traffic.Connections.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.ListView;
@@ -26,6 +27,8 @@ namespace Network_Packet_Traffic
         private void Form1_Load(object sender, EventArgs e)
         {
             InitializeConnectionsMonitor();
+
+
         }
 
         void AddColumnsToListView()
@@ -88,8 +91,6 @@ namespace Network_Packet_Traffic
 
 
 
-
-
         private void UpdateListView(object sender, PacketConnectionInfo[] packets)
         {
             if (isLoadedConnections == false)
@@ -104,10 +105,11 @@ namespace Network_Packet_Traffic
                         originalItems.Clear();
                         originalItems.AddRange(listViewItems); // Lưu các item gốc
 
+                        isLoadedConnections = true;
+
                     }));
                 }
             }
-            isLoadedConnections = true;
             UpdateStatusLabel();
 
 
@@ -143,7 +145,7 @@ namespace Network_Packet_Traffic
 
         private void UpdateStatusLabel()
         {
-            string a = $"Total Connections" + (tbt_Filter.TextLength != 0 ? $" ({tbt_Filter.Text})" : "") + $": {listViewConnections.Items.Count}" + (!connectionsMonitor.IsRunning ? " - Stopped" : "");
+            string a = $"Total Connections" + (tbt_Filter.TextLength != 0 ? $" ({tbt_Filter.Text})" : "") + $": {listViewConnections.Items.Count}" + (connectionsMonitor.IsRunning == false ? " - Stopped" : "");
             if (statusStrip.InvokeRequired)
             {
                 statusStrip.Invoke((Action)(() =>
@@ -155,6 +157,7 @@ namespace Network_Packet_Traffic
             {
                 toolStripStatusLabel.Text = a;
             }
+
         }
 
         bool IsPacketFilterMonitor(PacketConnectionInfo packet)
@@ -164,8 +167,7 @@ namespace Network_Packet_Traffic
                 packet.Protocol == ProtocolType.TCP && tCPToolStripMenuItem.Checked ||
                 packet.Protocol == ProtocolType.UDP && uDPToolStripMenuItem.Checked ||
                 packet.Protocol == ProtocolType.ARP && aRPToolStripMenuItem.Checked ||
-                packet.Protocol == ProtocolType.ICMP && iCMPToolStripMenuItem.Checked ||
-                packet.Protocol == ProtocolType.UNKNOWN && otherUnknownToolStripMenuItem.Checked;
+                packet.Protocol == ProtocolType.ICMP && iCMPToolStripMenuItem.Checked ;
         }
 
         private void tbt_Filter_TextChanged(object sender, EventArgs e)
@@ -187,28 +189,35 @@ namespace Network_Packet_Traffic
         void UpdateFilter()
         {
             connectionsMonitor.ProtocolFilter = protocolFilters;
+
         }
 
-        ProtocolFilter protocolFilters
+        ProtocolType protocolFilters
         {
             get
             {
-                ProtocolFilter protocolFilter = ProtocolFilter.NoFilter;
-                if (iPToolStripMenuItem1.Checked)
-                    protocolFilter |= ProtocolFilter.IPNET;
-                if (tCPToolStripMenuItem.Checked)
-                    protocolFilter |= ProtocolFilter.TCP;
-                if (uDPToolStripMenuItem.Checked)
-                    protocolFilter |= ProtocolFilter.UDP;
-                if (aRPToolStripMenuItem.Checked)
-                    protocolFilter |= ProtocolFilter.ARP;
-                if (iCMPToolStripMenuItem.Checked)
-                    protocolFilter |= ProtocolFilter.ICMP;
-                if (otherUnknownToolStripMenuItem.Checked)
-                    protocolFilter |= ProtocolFilter.UNKNOWN;
+                ProtocolType protocolFilter = ProtocolType.UNKNOWN;
+                var checkBoxes = new[]
+                {
+                    new { Item = iPToolStripMenuItem1, Protocol = ProtocolType.IPNET },
+                    new { Item = tCPToolStripMenuItem, Protocol = ProtocolType.TCP },
+                    new { Item = uDPToolStripMenuItem, Protocol = ProtocolType.UDP },
+                    new { Item = aRPToolStripMenuItem, Protocol = ProtocolType.ARP },
+                    new { Item = iCMPToolStripMenuItem, Protocol = ProtocolType.ICMP }
+                };
+
+                foreach (var checkBox in checkBoxes)
+                {
+                    if (checkBox.Item.Checked)
+                    {
+                        protocolFilter |= checkBox.Protocol;
+                    }
+                }
+
                 return protocolFilter;
             }
         }
+
 
 
         private void iPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -229,31 +238,43 @@ namespace Network_Packet_Traffic
         private void iPToolStripMenuItem1_CheckedChanged(object sender, EventArgs e)
         {
             UpdateFilter();
+            listViewConnections.Items.Clear();
+            isLoadedConnections = false;
         }
 
         private void tCPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
             UpdateFilter();
+            listViewConnections.Items.Clear();
+            isLoadedConnections = false;
         }
 
         private void uDPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
             UpdateFilter();
+            listViewConnections.Items.Clear();
+            isLoadedConnections = false;
         }
 
         private void aRPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
             UpdateFilter();
+            listViewConnections.Items.Clear();
+            isLoadedConnections = false;
         }
 
         private void iCMPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
             UpdateFilter();
+            listViewConnections.Items.Clear();
+            isLoadedConnections = false;
         }
 
         private void otherUnknownToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
             UpdateFilter();
+            listViewConnections.Items.Clear();
+            isLoadedConnections = false;
         }
     }
 }

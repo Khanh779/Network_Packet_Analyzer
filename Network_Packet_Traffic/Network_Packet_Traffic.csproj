@@ -60,7 +60,6 @@
     <Compile Include="Connections\DHCP\DHCP_Info.cs" />
     <Compile Include="Connections\DNS\DNS_Info.cs" />
     <Compile Include="Connections\DNS\DNS_Record.cs" />
-    <Compile Include="Connections\Enums\ProtocolFilter.cs" />
     <Compile Include="Connections\ICMP\ICMPEntry.cs" />
     <Compile Include="Connections\ICMP\MIB_ICMPENTRY.cs" />
     <Compile Include="Connections\IPNET\IPNET_Info.cs" />
