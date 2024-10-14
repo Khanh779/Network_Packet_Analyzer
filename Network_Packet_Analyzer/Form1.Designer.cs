@@ -38,6 +38,7 @@ namespace Network_Packet_Analyzer
             this.iCMPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tab_Home = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
             this.LB_ProductName = new System.Windows.Forms.Label();
             this.tab_ListMonitor = new System.Windows.Forms.TabPage();
             this.tbt_Filter = new System.Windows.Forms.TextBox();
@@ -46,7 +47,6 @@ namespace Network_Packet_Analyzer
             this.lblTcpDescription = new System.Windows.Forms.Label();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.label1 = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tab_Home.SuspendLayout();
@@ -101,32 +101,34 @@ namespace Network_Packet_Analyzer
             this.dHPCToolStripMenuItem,
             this.dNSToolStripMenuItem});
             this.toolKitToolStripMenuItem.Name = "toolKitToolStripMenuItem";
-            this.toolKitToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
-            this.toolKitToolStripMenuItem.Text = "Tool-Kit";
+            this.toolKitToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.toolKitToolStripMenuItem.Text = "Toolkit";
             // 
             // portScannerToolStripMenuItem
             // 
             this.portScannerToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.portScannerToolStripMenuItem.Name = "portScannerToolStripMenuItem";
-            this.portScannerToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.portScannerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.portScannerToolStripMenuItem.Text = "Port Scanner";
+            this.portScannerToolStripMenuItem.Click += new System.EventHandler(this.portScannerToolStripMenuItem_Click);
             // 
             // pingSnifferToolStripMenuItem
             // 
             this.pingSnifferToolStripMenuItem.Name = "pingSnifferToolStripMenuItem";
-            this.pingSnifferToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.pingSnifferToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.pingSnifferToolStripMenuItem.Text = "Ping Sniffer";
+            this.pingSnifferToolStripMenuItem.Click += new System.EventHandler(this.pingSnifferToolStripMenuItem_Click);
             // 
             // dHPCToolStripMenuItem
             // 
             this.dHPCToolStripMenuItem.Name = "dHPCToolStripMenuItem";
-            this.dHPCToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.dHPCToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.dHPCToolStripMenuItem.Text = "DHPC";
             // 
             // dNSToolStripMenuItem
             // 
             this.dNSToolStripMenuItem.Name = "dNSToolStripMenuItem";
-            this.dNSToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.dNSToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.dNSToolStripMenuItem.Text = "DNS";
             // 
             // filterMonitorToolStripMenuItem
@@ -236,10 +238,22 @@ namespace Network_Packet_Analyzer
             this.tab_Home.TabIndex = 0;
             this.tab_Home.Text = "Home";
             // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoEllipsis = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(16, 60);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(581, 190);
+            this.label1.TabIndex = 1;
+            this.label1.Text = resources.GetString("label1.Text");
+            // 
             // LB_ProductName
             // 
             this.LB_ProductName.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LB_ProductName.Location = new System.Drawing.Point(21, 20);
+            this.LB_ProductName.Location = new System.Drawing.Point(15, 20);
             this.LB_ProductName.Name = "LB_ProductName";
             this.LB_ProductName.Size = new System.Drawing.Size(284, 33);
             this.LB_ProductName.TabIndex = 0;
@@ -317,17 +331,6 @@ namespace Network_Packet_Analyzer
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
             this.toolStripStatusLabel.Size = new System.Drawing.Size(39, 17);
             this.toolStripStatusLabel.Text = "Ready";
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoEllipsis = true;
-            this.label1.Location = new System.Drawing.Point(22, 68);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(575, 93);
-            this.label1.TabIndex = 1;
-            this.label1.Text = resources.GetString("label1.Text");
             // 
             // Form1
             // 

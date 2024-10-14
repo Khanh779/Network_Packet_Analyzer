@@ -58,32 +58,32 @@ namespace Network_Packet_Analyzer
 
         private void OnPacketConnectionStarted(object sender, PacketConnectionInfo packet)
         {
-            if (isLoadedConnections)
+            if (isLoadedConnections && listViewConnections.InvokeRequired)
             {
-                listViewConnections.Invoke((Action)(() =>
+                var liIt = CreateListViewItem(packet);
+                if (IsPacketFilterMonitor(packet) && !listViewConnections.Items.Contains(liIt))
                 {
-                    var liIt = CreateListViewItem(packet);
-                    if (IsPacketFilterMonitor(packet) && !listViewConnections.Items.Contains(liIt))
+                    listViewConnections.Invoke((Action)(() =>
                     {
                         listViewConnections.Items.Add(liIt);
-                    }
-                }));
+                    }));
+                }
             }
             UpdateStatusLabel();
         }
 
         private void OnPacketConnectionEnded(object sender, PacketConnectionInfo packet)
         {
-            if (isLoadedConnections)
+            if (isLoadedConnections && listViewConnections.InvokeRequired)
             {
-                listViewConnections.Invoke((Action)(() =>
+                var liIt = CreateListViewItem(packet);
+                if (listViewConnections.Items.Contains(liIt))
                 {
-                    var liIt = CreateListViewItem(packet);
-                    if (!IsPacketFilterMonitor(packet) || listViewConnections.Items.Contains(liIt))
+                    listViewConnections.Invoke((Action)(() =>
                     {
                         listViewConnections.Items.Remove(liIt);
-                    }
-                }));
+                    }));
+                }
             }
             UpdateStatusLabel();
         }
@@ -135,21 +135,17 @@ namespace Network_Packet_Analyzer
 
         private bool IsPacketFilterMonitor(PacketConnectionInfo packet)
         {
-            return (packet.Protocol == ProtocolType.IPNET && iPToolStripMenuItem1.Checked) ||
-                   (packet.Protocol == ProtocolType.TCP && tCPToolStripMenuItem.Checked) ||
-                   (packet.Protocol == ProtocolType.UDP && uDPToolStripMenuItem.Checked) ||
-                   (packet.Protocol == ProtocolType.ARP && aRPToolStripMenuItem.Checked) ||
-                   (packet.Protocol == ProtocolType.ICMP && iCMPToolStripMenuItem.Checked);
+            return ((packet.Protocol == ProtocolType.IPNET || packet.Protocol.HasFlag(ProtocolType.IPNET)) && iPToolStripMenuItem1.Checked) ||
+                     ((packet.Protocol == ProtocolType.TCP || packet.Protocol.HasFlag(ProtocolType.TCP)) && tCPToolStripMenuItem.Checked) ||
+                     ((packet.Protocol == ProtocolType.UDP || packet.Protocol.HasFlag(ProtocolType.UDP)) && uDPToolStripMenuItem.Checked) ||
+                     ((packet.Protocol == ProtocolType.ARP || packet.Protocol.HasFlag(ProtocolType.ARP)) && aRPToolStripMenuItem.Checked) ||
+                     ((packet.Protocol == ProtocolType.ICMP || packet.Protocol.HasFlag(ProtocolType.ICMP)) && iCMPToolStripMenuItem.Checked);
+
         }
 
         private void tbt_Filter_TextChanged(object sender, EventArgs e)
         {
             string filterText = tbt_Filter.Text.ToLower();
-            //var filteredItems = originalItems
-            //    .Where(item => item.SubItems.Cast<ListViewItem.ListViewSubItem>()
-            //    .Any(subItem => subItem.Text.ToLower().Contains(filterText)))
-            //    .Select(item => item.Clone() as ListViewItem)
-            //    .ToArray();
 
             List<ListViewItem> filteredItems = new List<ListViewItem>();
             foreach (var item in originalItems)
@@ -208,13 +204,24 @@ namespace Network_Packet_Analyzer
         private void OtherMenuItems_CheckedChanged(object sender, EventArgs e)
         {
             UpdateFilter();
-            listViewConnections.Items.Clear();
             isLoadedConnections = false;
+            listViewConnections.Items.Clear();
+
             //if (connectionsMonitor != null)
             //{
             //    connectionsMonitor.RestartListening();
             //    UpdateStatusLabel();
             //}
+        }
+
+        private void pingSnifferToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new PingForm().Show();
+        }
+
+        private void portScannerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new PortScanner_Form().Show();
         }
     }
 }

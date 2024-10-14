@@ -6,6 +6,8 @@ The "Network Packet Analyzer" project is a network traffic monitoring and packet
 ![image](https://github.com/Khanh779/Network_Packet_Analyzer/blob/master/ScreenShot/Screenshot_1.png)
 
 ## Features
+- Port Scanner
+- Ping Sniffer
 - Analyze and display detailed network packet information.
 - Support for TCP, UDP, ARP, IP, ICMP, DHCP, DNS protocols.
 - Real-time monitoring of active and closed connections.
