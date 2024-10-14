@@ -228,5 +228,10 @@ namespace Network_Packet_Analyzer
         {
             new AboutForm().ShowDialog();
         }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }
