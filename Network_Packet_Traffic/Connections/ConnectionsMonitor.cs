@@ -4,6 +4,7 @@ using Network_Packet_Traffic.Connections.IPNET;
 using Network_Packet_Traffic.Connections.Structs;
 using Network_Packet_Traffic.Connections.TCP;
 using Network_Packet_Traffic.Connections.UDP;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -58,9 +59,7 @@ namespace Network_Packet_Traffic.Connections
         public ConnectionsMonitor(bool autoReload = true)
         {
             _previousPackets = new HashSet<PacketConnectionInfo>();
-            _monitorThread = new Thread(MonitorPacketConnections);
             IsAutoReload = autoReload;
-            _monitorThread.IsBackground = true;
         }
 
         /// <summary>
@@ -79,13 +78,14 @@ namespace Network_Packet_Traffic.Connections
         public void StartListening()
         {
             _shouldStop = false;
-            if (_monitorThread == null || _monitorThread.ThreadState != ThreadState.Running || _monitorThread.ThreadState == ThreadState.Stopped
-                || _monitorThread.ThreadState == ThreadState.Unstarted || _monitorThread.ThreadState == ThreadState.Aborted) // Chỉ cần kiểm tra không chạy
+            if (_monitorThread == null || _monitorThread.ThreadState != ThreadState.Running) // Chỉ cần kiểm tra không chạy
             {
                 _monitorThread = new Thread(MonitorPacketConnections);
 
                 _monitorThread.IsBackground = true; // Đặt thread là background nếu chưa
                 _monitorThread.Start();
+
+                Console.WriteLine("Monitor started");
             }
         }
 
@@ -103,10 +103,19 @@ namespace Network_Packet_Traffic.Connections
             _shouldStop = true;
             if (_monitorThread.ThreadState == ThreadState.Running) // Chỉ cần kiểm tra đang chạy
             {
-                _monitorThread.Join(); // Đợi thread kết thúc
                 _monitorThread.Abort(); // Sau đó hủy thread
-
+                Console.WriteLine("Monitor stopped");
             }
+        }
+
+        /// <summary>
+        /// Restarts the listening for new packet connections.
+        /// </summary>
+        public void RestartListening()
+        {
+            StopListening();
+            StartListening();
+            Console.WriteLine("Monitor restarted");
         }
 
 
@@ -148,7 +157,7 @@ namespace Network_Packet_Traffic.Connections
         {
             HashSet<PacketConnectionInfo> packetConnectionInfos = new HashSet<PacketConnectionInfo>();
 
-            if (protocolFilter == ProtocolType.TCP || protocolFilter == ProtocolType.All)
+            if (protocolFilter.HasFlag(ProtocolType.TCP))
             {
                 MIB_TCPTABLE_OWNER_PID tcpTable = TCP.TCP_Info.GetTcpTable();
                 for (int i = 0; i < tcpTable.dwNumEntries; i++)
@@ -167,7 +176,7 @@ namespace Network_Packet_Traffic.Connections
                 }
             }
 
-            if (protocolFilter == ProtocolType.UDP || protocolFilter == ProtocolType.All)
+            if (protocolFilter.HasFlag(ProtocolType.UDP))
             {
                 MIB_UDPTABLE_OWNER_PID udpTable = UDP.UDP_Info.GetUdpTable();
                 for (int i = 0; i < udpTable.dwNumEntries; i++)
@@ -186,7 +195,7 @@ namespace Network_Packet_Traffic.Connections
                 }
             }
 
-            if (protocolFilter == ProtocolType.IPNET || protocolFilter == ProtocolType.All)
+            if (protocolFilter.HasFlag(ProtocolType.IPNET))
             {
                 MIB_IPNETTABLE ipNetTable = IPNET.IPNET_Info.GetIpNetTable();
                 for (int i = 0; i < ipNetTable.dwNumEntries; i++)
@@ -206,7 +215,7 @@ namespace Network_Packet_Traffic.Connections
                 }
             }
 
-            if (protocolFilter == ProtocolType.ARP || protocolFilter == ProtocolType.All)
+            if (protocolFilter.HasFlag(ProtocolType.ARP))
             {
                 MIB_ARPTABLE arpTable = ARP.ARP_Info.GetARPTable();
                 for (int i = 0; i < arpTable.NumberOfEntries; i++)
@@ -228,6 +237,7 @@ namespace Network_Packet_Traffic.Connections
 
             return packetConnectionInfos;
         }
+
 
 
         /// <summary>
@@ -265,35 +275,33 @@ namespace Network_Packet_Traffic.Connections
                 if (_shouldStop)
                     break;
 
-                try
+                HashSet<PacketConnectionInfo> packetConnectionInfos = GetBasePacket(ProtocolFilter);
+
+                // Trigger event for new packets
+                NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos.ToArray());
+
+                // Check for ended packet connections
+                foreach (var oldPacket in _previousPackets)
                 {
-                    HashSet<PacketConnectionInfo> packetConnectionInfos = GetBasePacket(_ProtocolFilter);
-
-                    // Trigger event for new packets
-                    NewPacketsConnectionLoad?.Invoke(this, packetConnectionInfos.ToArray());
-
-                    foreach (var oldPacket in _previousPackets)
+                    if (!packetConnectionInfos.Contains(oldPacket))
                     {
-                        if (!packetConnectionInfos.Contains(oldPacket))
-                        {
-                            NewPacketConnectionStarted?.Invoke(this, oldPacket);
-                        }
+                        NewPacketConnectionEnded?.Invoke(this, oldPacket);
                     }
-
-                    foreach (var newPacket in packetConnectionInfos)
-                    {
-                        if (!_previousPackets.Contains(newPacket))
-                        {
-                            NewPacketConnectionEnded?.Invoke(this, newPacket);
-                        }
-                    }
-
-                    _previousPackets = packetConnectionInfos;
                 }
-                catch { }
 
-                if (_shouldStop)
-                    break;
+                // Check for new packet connections
+                foreach (var newPacket in packetConnectionInfos)
+                {
+                    if (!_previousPackets.Contains(newPacket))
+                    {
+                        NewPacketConnectionStarted?.Invoke(this, newPacket);
+                    }
+                }
+
+                // Update previous packets
+                _previousPackets = packetConnectionInfos; // No need to clear first
+
+                // Sleep before the next iteration
                 Thread.Sleep(Interval);
             }
         }

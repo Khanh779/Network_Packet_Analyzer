@@ -142,7 +142,7 @@ namespace Network_Packet_Traffic
             this.iPToolStripMenuItem.Name = "iPToolStripMenuItem";
             this.iPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.iPToolStripMenuItem.Text = "On/ Off";
-            this.iPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.iPToolStripMenuItem_CheckedChanged);
+            this.iPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.iPToolStripMenuItem1_CheckedChanged);
             // 
             // otherToolStripMenuItem
             // 
@@ -164,7 +164,7 @@ namespace Network_Packet_Traffic
             this.iPToolStripMenuItem1.Name = "iPToolStripMenuItem1";
             this.iPToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.iPToolStripMenuItem1.Text = "IP";
-            this.iPToolStripMenuItem1.CheckedChanged += new System.EventHandler(this.iPToolStripMenuItem1_CheckedChanged);
+            this.iPToolStripMenuItem1.CheckedChanged += new System.EventHandler(this.OtherMenuItems_CheckedChanged);
             // 
             // tCPToolStripMenuItem
             // 
@@ -174,7 +174,7 @@ namespace Network_Packet_Traffic
             this.tCPToolStripMenuItem.Name = "tCPToolStripMenuItem";
             this.tCPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.tCPToolStripMenuItem.Text = "TCP";
-            this.tCPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.tCPToolStripMenuItem_CheckedChanged);
+            this.tCPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.OtherMenuItems_CheckedChanged);
             // 
             // uDPToolStripMenuItem
             // 
@@ -184,7 +184,7 @@ namespace Network_Packet_Traffic
             this.uDPToolStripMenuItem.Name = "uDPToolStripMenuItem";
             this.uDPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.uDPToolStripMenuItem.Text = "UDP";
-            this.uDPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.uDPToolStripMenuItem_CheckedChanged);
+            this.uDPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.OtherMenuItems_CheckedChanged);
             // 
             // aRPToolStripMenuItem
             // 
@@ -194,7 +194,7 @@ namespace Network_Packet_Traffic
             this.aRPToolStripMenuItem.Name = "aRPToolStripMenuItem";
             this.aRPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aRPToolStripMenuItem.Text = "ARP";
-            this.aRPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.aRPToolStripMenuItem_CheckedChanged);
+            this.aRPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.OtherMenuItems_CheckedChanged);
             // 
             // iCMPToolStripMenuItem
             // 
@@ -204,7 +204,7 @@ namespace Network_Packet_Traffic
             this.iCMPToolStripMenuItem.Name = "iCMPToolStripMenuItem";
             this.iCMPToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.iCMPToolStripMenuItem.Text = "ICMP";
-            this.iCMPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.iCMPToolStripMenuItem_CheckedChanged);
+            this.iCMPToolStripMenuItem.CheckedChanged += new System.EventHandler(this.OtherMenuItems_CheckedChanged);
             // 
             // tabControl
             // 

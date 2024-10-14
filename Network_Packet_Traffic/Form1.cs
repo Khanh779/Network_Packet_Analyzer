@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.ListView;
 
 namespace Network_Packet_Traffic
 {
@@ -15,8 +14,7 @@ namespace Network_Packet_Traffic
     {
         private ConnectionsMonitor connectionsMonitor;
         private bool isLoadedConnections = false;
-
-        private List<ListViewItem> originalItems = new List<ListViewItem>(); // Danh sách tạm để lưu các item gốc
+        private List<ListViewItem> originalItems = new List<ListViewItem>();
 
         public Form1()
         {
@@ -27,11 +25,9 @@ namespace Network_Packet_Traffic
         private void Form1_Load(object sender, EventArgs e)
         {
             InitializeConnectionsMonitor();
-
-
         }
 
-        void AddColumnsToListView()
+        private void AddColumnsToListView()
         {
             var columns = new[]
             {
@@ -60,71 +56,58 @@ namespace Network_Packet_Traffic
             connectionsMonitor.StartListening();
         }
 
-
         private void OnPacketConnectionStarted(object sender, PacketConnectionInfo packet)
         {
-            if (isLoadedConnections && listViewConnections.InvokeRequired)
+            if (isLoadedConnections)
             {
-                var liIt = CreateListViewItem(packet);
-                listViewConnections.Invoke((Action)
-                    delegate
+                listViewConnections.Invoke((Action)(() =>
+                {
+                    var liIt = CreateListViewItem(packet);
+                    if (IsPacketFilterMonitor(packet) && !listViewConnections.Items.Contains(liIt))
                     {
-                        if (IsPacketFilterMonitor(packet) && !listViewConnections.Items.Contains(liIt))
-                            listViewConnections.Items.Add(liIt);
-                    });
+                        listViewConnections.Items.Add(liIt);
+                    }
+                }));
             }
+            UpdateStatusLabel();
         }
 
         private void OnPacketConnectionEnded(object sender, PacketConnectionInfo packet)
         {
-            if (isLoadedConnections && listViewConnections.InvokeRequired)
+            if (isLoadedConnections)
             {
-                var liIt = CreateListViewItem(packet);
-                listViewConnections.Invoke((Action)
-                    delegate
+                listViewConnections.Invoke((Action)(() =>
+                {
+                    var liIt = CreateListViewItem(packet);
+                    if (!IsPacketFilterMonitor(packet) || listViewConnections.Items.Contains(liIt))
                     {
-                        if (!IsPacketFilterMonitor(packet) || (IsPacketFilterMonitor(packet) && listViewConnections.Items.Contains(liIt)))
-                            listViewConnections.Items.Remove(liIt);
-                    });
+                        listViewConnections.Items.Remove(liIt);
+                    }
+                }));
             }
+            UpdateStatusLabel();
         }
-
-
 
         private void UpdateListView(object sender, PacketConnectionInfo[] packets)
         {
-            if (isLoadedConnections == false)
-            {
-                var listViewItems = ConvertFromPackArrayToListView(packets);
-                if (listViewConnections.InvokeRequired)
-                {
-                    listViewConnections.Invoke((Action)(() =>
-                    {
-                        listViewConnections.Items.Clear();
-                        listViewConnections.Items.AddRange(listViewItems);
-                        originalItems.Clear();
-                        originalItems.AddRange(listViewItems); // Lưu các item gốc
-
-                        isLoadedConnections = true;
-
-                    }));
-                }
-            }
+            //UpdateStatusLabel();
+            //if (isLoadedConnections == false)
+            //{
+            //    var listViewItems = ConvertFromPackArrayToListView(packets);
+            //    listViewConnections.Invoke((Action)(() =>
+            //    {
+            //        listViewConnections.Items.Clear();
+            //        listViewConnections.Items.AddRange(listViewItems);
+            //        originalItems = listViewItems.ToList(); // Cập nhật danh sách item gốc
+            //    }));
+               isLoadedConnections = true;
+            //}
             UpdateStatusLabel();
-
-
         }
 
-        ListViewItem[] ConvertFromPackArrayToListView(PacketConnectionInfo[] packetConnectionInfos)
+        private ListViewItem[] ConvertFromPackArrayToListView(PacketConnectionInfo[] packetConnectionInfos)
         {
-            HashSet<ListViewItem> listViewItems = new HashSet<ListViewItem>();
-
-            for (int i = 0; i < packetConnectionInfos.Length; i++)
-            {
-                var a = CreateListViewItem(packetConnectionInfos[i]);
-                listViewItems.Add(a);
-            }
-            return listViewItems.ToArray();
+            return packetConnectionInfos.Select(CreateListViewItem).ToArray();
         }
 
         private ListViewItem CreateListViewItem(PacketConnectionInfo packet)
@@ -145,136 +128,86 @@ namespace Network_Packet_Traffic
 
         private void UpdateStatusLabel()
         {
-            string a = $"Total Connections" + (tbt_Filter.TextLength != 0 ? $" ({tbt_Filter.Text})" : "") + $": {listViewConnections.Items.Count}" + (connectionsMonitor.IsRunning == false ? " - Stopped" : "");
-            if (statusStrip.InvokeRequired)
-            {
-                statusStrip.Invoke((Action)(() =>
-                {
-                    toolStripStatusLabel.Text = a;
-                }));
-            }
-            else
-            {
-                toolStripStatusLabel.Text = a;
-            }
-
+            string statusMessage = $"Total Connections: {listViewConnections.Items.Count}{(connectionsMonitor.IsRunning ? "" : " - Stopped")}";
+            statusStrip.Invoke((Action)(() => toolStripStatusLabel.Text = statusMessage));
         }
 
-        bool IsPacketFilterMonitor(PacketConnectionInfo packet)
+
+        private bool IsPacketFilterMonitor(PacketConnectionInfo packet)
         {
-            return
-                packet.Protocol == ProtocolType.IPNET && iPToolStripMenuItem1.Checked ||
-                packet.Protocol == ProtocolType.TCP && tCPToolStripMenuItem.Checked ||
-                packet.Protocol == ProtocolType.UDP && uDPToolStripMenuItem.Checked ||
-                packet.Protocol == ProtocolType.ARP && aRPToolStripMenuItem.Checked ||
-                packet.Protocol == ProtocolType.ICMP && iCMPToolStripMenuItem.Checked ;
+            return (packet.Protocol == ProtocolType.IPNET && iPToolStripMenuItem1.Checked) ||
+                   (packet.Protocol == ProtocolType.TCP && tCPToolStripMenuItem.Checked) ||
+                   (packet.Protocol == ProtocolType.UDP && uDPToolStripMenuItem.Checked) ||
+                   (packet.Protocol == ProtocolType.ARP && aRPToolStripMenuItem.Checked) ||
+                   (packet.Protocol == ProtocolType.ICMP && iCMPToolStripMenuItem.Checked);
         }
 
         private void tbt_Filter_TextChanged(object sender, EventArgs e)
         {
             string filterText = tbt_Filter.Text.ToLower();
-            List<ListViewItem> filteredItems = new List<ListViewItem>();
-            foreach (var item in originalItems)
-            {
-                bool matches = item.SubItems.Cast<ListViewItem.ListViewSubItem>().Any(subItem => subItem.Text.ToLower().Contains(filterText));
-                if (matches) filteredItems.Add(item.Clone() as ListViewItem);
-            }
+            var filteredItems = originalItems
+                .Where(item => item.SubItems.Cast<ListViewItem.ListViewSubItem>()
+                .Any(subItem => subItem.Text.ToLower().Contains(filterText)))
+                .Select(item => item.Clone() as ListViewItem)
+                .ToArray();
 
             listViewConnections.Items.Clear();
-            listViewConnections.Items.AddRange(filteredItems.ToArray());
-            filteredItems.Clear();
+            listViewConnections.Items.AddRange(filteredItems);
             UpdateStatusLabel();
         }
 
-        void UpdateFilter()
+        private void UpdateFilter()
         {
             connectionsMonitor.ProtocolFilter = protocolFilters;
-
         }
 
-        ProtocolType protocolFilters
+        private ProtocolType protocolFilters
         {
             get
             {
-                ProtocolType protocolFilter = ProtocolType.UNKNOWN;
-                var checkBoxes = new[]
-                {
-                    new { Item = iPToolStripMenuItem1, Protocol = ProtocolType.IPNET },
-                    new { Item = tCPToolStripMenuItem, Protocol = ProtocolType.TCP },
-                    new { Item = uDPToolStripMenuItem, Protocol = ProtocolType.UDP },
-                    new { Item = aRPToolStripMenuItem, Protocol = ProtocolType.ARP },
-                    new { Item = iCMPToolStripMenuItem, Protocol = ProtocolType.ICMP }
-                };
+                ProtocolType protocolType = ProtocolType.UNKNOWN;
+                if (iPToolStripMenuItem1.Checked) protocolType |= ProtocolType.IPNET;
+                if (tCPToolStripMenuItem.Checked) protocolType |= ProtocolType.TCP;
+                if (uDPToolStripMenuItem.Checked) protocolType |= ProtocolType.UDP;
+                if (iCMPToolStripMenuItem.Checked) protocolType |= ProtocolType.ICMP;
+                if (dHPCToolStripMenuItem.Checked) protocolType |= ProtocolType.DHCP;
+                if (dNSToolStripMenuItem.Checked) protocolType |= ProtocolType.DNS;
 
-                foreach (var checkBox in checkBoxes)
-                {
-                    if (checkBox.Item.Checked)
-                    {
-                        protocolFilter |= checkBox.Protocol;
-                    }
-                }
-
-                return protocolFilter;
-            }
-        }
-
-
-
-        private void iPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-            if (connectionsMonitor != null)
-            {
-                UpdateFilter();
-                if (iPToolStripMenuItem.Checked)
-                    connectionsMonitor.StartListening();
-                else
-                    connectionsMonitor.StopListening();
-
-                UpdateStatusLabel();
-                MessageBox.Show("IP Filter is " + (iPToolStripMenuItem.Checked ? "Enabled" : "Disabled"));
+                return protocolType;
             }
         }
 
         private void iPToolStripMenuItem1_CheckedChanged(object sender, EventArgs e)
         {
             UpdateFilter();
-            listViewConnections.Items.Clear();
             isLoadedConnections = false;
+
+            if (connectionsMonitor != null)
+            {
+                if (iPToolStripMenuItem.Checked)
+                {
+                    connectionsMonitor.StartListening();
+                }
+                else
+                {
+                    connectionsMonitor.StopListening();
+                }
+
+                UpdateStatusLabel();
+                MessageBox.Show("IP Filter is " + (iPToolStripMenuItem.Checked ? "Enabled" : "Disabled"));
+            }
         }
 
-        private void tCPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        private void OtherMenuItems_CheckedChanged(object sender, EventArgs e)
         {
             UpdateFilter();
             listViewConnections.Items.Clear();
             isLoadedConnections = false;
-        }
-
-        private void uDPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateFilter();
-            listViewConnections.Items.Clear();
-            isLoadedConnections = false;
-        }
-
-        private void aRPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateFilter();
-            listViewConnections.Items.Clear();
-            isLoadedConnections = false;
-        }
-
-        private void iCMPToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateFilter();
-            listViewConnections.Items.Clear();
-            isLoadedConnections = false;
-        }
-
-        private void otherUnknownToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
-        {
-            UpdateFilter();
-            listViewConnections.Items.Clear();
-            isLoadedConnections = false;
+            if (connectionsMonitor != null)
+            {
+                connectionsMonitor.RestartListening();
+                UpdateStatusLabel();
+            }
         }
     }
 }
