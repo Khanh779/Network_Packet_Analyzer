@@ -55,8 +55,8 @@ namespace Network_Packet_Analyzer
             this.labelDescription.Name = "labelDescription";
             this.labelDescription.Size = new System.Drawing.Size(338, 67);
             this.labelDescription.TabIndex = 2;
-            this.labelDescription.Text = "A tool for monitoring and analyzing network traffic.\r\nDeveloped by Khanh779.\r\n\r\n©" +
-    " 2024 Hecop Software.";
+            this.labelDescription.Text = "A tool for monitoring and analyzing network traffic.\r\nDeveloped by Khanh779.\r\nGit" +
+    "hub: https://github.com/Khanh779\r\n© 2024 Hecop Software.";
             // 
             // buttonClose
             // 
