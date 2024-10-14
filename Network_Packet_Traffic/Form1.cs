@@ -100,7 +100,7 @@ namespace Network_Packet_Traffic
             //        listViewConnections.Items.AddRange(listViewItems);
             //        originalItems = listViewItems.ToList(); // Cập nhật danh sách item gốc
             //    }));
-               isLoadedConnections = true;
+            isLoadedConnections = true;
             //}
             UpdateStatusLabel();
         }
@@ -145,14 +145,21 @@ namespace Network_Packet_Traffic
         private void tbt_Filter_TextChanged(object sender, EventArgs e)
         {
             string filterText = tbt_Filter.Text.ToLower();
-            var filteredItems = originalItems
-                .Where(item => item.SubItems.Cast<ListViewItem.ListViewSubItem>()
-                .Any(subItem => subItem.Text.ToLower().Contains(filterText)))
-                .Select(item => item.Clone() as ListViewItem)
-                .ToArray();
+            //var filteredItems = originalItems
+            //    .Where(item => item.SubItems.Cast<ListViewItem.ListViewSubItem>()
+            //    .Any(subItem => subItem.Text.ToLower().Contains(filterText)))
+            //    .Select(item => item.Clone() as ListViewItem)
+            //    .ToArray();
+
+            List<ListViewItem> filteredItems = new List<ListViewItem>();
+            foreach (var item in originalItems)
+            {
+                bool matches = item.SubItems.Cast<ListViewItem.ListViewSubItem>().Any(subItem => subItem.Text.ToLower().Contains(filterText));
+                if (matches) filteredItems.Add(item.Clone() as ListViewItem);
+            }
 
             listViewConnections.Items.Clear();
-            listViewConnections.Items.AddRange(filteredItems);
+            listViewConnections.Items.AddRange(filteredItems.ToArray());
             UpdateStatusLabel();
         }
 
@@ -203,11 +210,11 @@ namespace Network_Packet_Traffic
             UpdateFilter();
             listViewConnections.Items.Clear();
             isLoadedConnections = false;
-            if (connectionsMonitor != null)
-            {
-                connectionsMonitor.RestartListening();
-                UpdateStatusLabel();
-            }
+            //if (connectionsMonitor != null)
+            //{
+            //    connectionsMonitor.RestartListening();
+            //    UpdateStatusLabel();
+            //}
         }
     }
 }
