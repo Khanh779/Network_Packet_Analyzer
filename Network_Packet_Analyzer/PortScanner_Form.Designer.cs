@@ -69,12 +69,6 @@
             // 
             this.listResults.FormattingEnabled = true;
             this.listResults.IntegralHeight = false;
-            this.listResults.Items.AddRange(new object[] {
-            "sd",
-            "sd",
-            "df",
-            "ssaf",
-            "s"});
             this.listResults.Location = new System.Drawing.Point(17, 132);
             this.listResults.Name = "listResults";
             this.listResults.Size = new System.Drawing.Size(318, 90);
@@ -148,6 +142,8 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "PortScanner_Form";
+            this.ShowInTaskbar = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Port Scanner";
             this.statusStrip.ResumeLayout(false);
