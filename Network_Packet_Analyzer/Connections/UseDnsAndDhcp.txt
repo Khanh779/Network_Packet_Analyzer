@@ -1,0 +1,41 @@
+﻿using System;
+using Network_Packet_Analyzer.Connections.DNS;
+using Network_Packet_Analyzer.Connections.DHCP;
+
+namespace <Name_Space>
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Use the DNS_Info class
+            Console.WriteLine("Resolving DNS Information:");
+            DNS_Info dnsInfo = new DNS_Info("8.8.8.8"); // IP Address of the DNS Server (Google DNS)
+            dnsInfo.ResolveDnsFromIp("8.8.8.8"); // Query the DNS Server for its own information
+            Console.WriteLine($"Host Name: {dnsInfo.HostName}");
+            Console.WriteLine($"Host Addresses: {string.Join(", ", dnsInfo.GetIpAddresses())}");
+            Console.WriteLine($"Response Time: {dnsInfo.ResponseTime}");
+            Console.WriteLine($"Is Resolved: {dnsInfo.IsResolved}");
+            Console.WriteLine();
+
+            // Use the DHCP_Info class
+            Console.WriteLine("Requesting DHCP Lease:");
+            DHCP_Info dhcpInfo = new DHCP_Info("192.168.1.1"); // IP Address of the DHCP Server
+            dhcpInfo.RequestLease("00-14-22-01-23-45"); // Mac Address
+            Console.WriteLine($"Assigned IP Address: {dhcpInfo.AssignedIPAddress}");
+            Console.WriteLine($"Lease Time: {dhcpInfo.LeaseTime}");
+            Console.WriteLine($"Lease Start Time: {dhcpInfo.LeaseStartTime}");
+            Console.WriteLine($"Is Lease Valid: {dhcpInfo.IsLeaseValid}");
+            Console.WriteLine();
+
+            // Renew and Release the DHCP Lease
+            dhcpInfo.RenewLease();
+            Console.WriteLine($"After Renewal - Lease Time: {dhcpInfo.LeaseTime}");
+
+            dhcpInfo.ReleaseLease();
+            Console.WriteLine($"After Release - Is Lease Valid: {dhcpInfo.IsLeaseValid}");
+
+            Console.ReadLine(); // 
+        }
+    }
+}
