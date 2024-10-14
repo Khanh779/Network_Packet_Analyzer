@@ -363,6 +363,9 @@ MigrationBackup/
 FodyWeavers.xsd
 /Network_Packet_Traffic.sln
 /Network_Packet_Traffic.sln
+<<<<<<< HEAD
 /Network_Packet_Analyzer.sln
 /Network_Packet_Analyzer.sln
 /Network_Packet_Analyzer.sln
+=======
+>>>>>>> 515a1948c465335697c5967df77f95534f842e03
