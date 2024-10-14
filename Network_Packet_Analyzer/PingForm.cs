@@ -56,48 +56,45 @@ namespace Network_Packet_Analyzer
             int minTime = int.MaxValue;
             int maxTime = int.MinValue;
 
-            for (int i = 0; i < 4; i++) // Execute 4 times
+            try
             {
-                try
+                PingReply reply = ping.Send(address, 1000); // timeout 1000ms
+
+                if (reply.Status == IPStatus.Success)
                 {
-                    PingReply reply = ping.Send(address, 1000); // timeout 1000ms
+                    // Show results from ping
+                    rtbResults.AppendText($"Reply from {reply.Address}: time={reply.RoundtripTime}ms\n");
+                    successCount++;
+                    totalTime += (int)reply.RoundtripTime;
 
-                    if (reply.Status == IPStatus.Success)
+                    // Refresh min and max time
+                    if (reply.RoundtripTime < minTime) minTime = (int)reply.RoundtripTime;
+                    if (reply.RoundtripTime > maxTime) maxTime = (int)reply.RoundtripTime;
+
+                    // Show more details
+                    rtbResults.AppendText($"IPv4 Address: {reply.Address.MapToIPv4()}\n");
+                    rtbResults.AppendText($"IPv6 Address: {reply.Address.MapToIPv6()}\n");
+                    rtbResults.AppendText($"Address Family: {reply.Address.AddressFamily}\n");
+
+                    if (reply.Options != null)
                     {
-                        // Show results from ping
-                        rtbResults.AppendText($"Reply from {reply.Address}: time={reply.RoundtripTime}ms\n");
-                        successCount++;
-                        totalTime += (int)reply.RoundtripTime;
-
-                        // Refresh min and max time
-                        if (reply.RoundtripTime < minTime) minTime = (int)reply.RoundtripTime;
-                        if (reply.RoundtripTime > maxTime) maxTime = (int)reply.RoundtripTime;
-
-                        // Show more details
-                        rtbResults.AppendText($"IPv4 Address: {reply.Address.MapToIPv4()}\n");
-                        rtbResults.AppendText($"IPv6 Address: {reply.Address.MapToIPv6()}\n");
-                        rtbResults.AppendText($"Address Family: {reply.Address.AddressFamily}\n");
-
-                        if (reply.Options != null)
-                        {
-                            rtbResults.AppendText($"TTL: {reply.Options.Ttl}\n");
-                        }
-                        else
-                        {
-                            rtbResults.AppendText("TTL: N/A\n");
-                        }
-
-                        rtbResults.AppendText($"Buffer Size: {reply.Buffer.Length} bytes\n");
+                        rtbResults.AppendText($"TTL: {reply.Options.Ttl}\n");
                     }
                     else
                     {
-                        rtbResults.AppendText($"Ping failed: {reply.Status}\n");
+                        rtbResults.AppendText("TTL: N/A\n");
                     }
+
+                    rtbResults.AppendText($"Buffer Size: {reply.Buffer.Length} bytes\n");
                 }
-                catch (Exception ex)
+                else
                 {
-                    rtbResults.AppendText($"Error: {ex.Message}\n");
+                    rtbResults.AppendText($"Ping failed: {reply.Status}\n");
                 }
+            }
+            catch (Exception ex)
+            {
+                rtbResults.AppendText($"Error: {ex.Message}\n");
             }
 
             //Show summary
